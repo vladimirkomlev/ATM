@@ -1,0 +1,69 @@
+body {
+	background: #E6E6FA;
+}
+
+.main-block {
+	border: 1px solid #778899;
+	background: #F5F5F5;
+}
+
+.head-block {
+	background: #6495ED;
+}
+
+.footer-block {
+	background: #4682B4;
+}
+
+.colh2 {
+	color: #F8F8FF;
+}
+
+.colGetArchive {
+	color: #000000;
+}
+
+p {
+	color: #E6E6FA;
+}
+
+/*Heights for blocks*/
+.head-block {
+	height: 150px;
+}
+
+.main-block {
+	height: 400px;
+}
+
+.footer-block {
+	height: 110px;
+}
+
+a {
+	text-decoration: none;
+}
+/*settings buttons for page selection.jsp*/
+.button-setting {
+	border: 1px solid #333; /*frame*/
+	display: inline-block;
+	background: #FFFFF0;
+	padding: 5px 15px; /*field*/
+	text-decoration: none;
+	color: #000; /*color text*/
+}
+
+.button-setting:hover {
+	/* box-shadow: 0 0 5px rgba(0,0,0,0.3); /*shadow*/
+	background: linear-gradient(to bottom, #fcfff4, #e9e9ce); /*gradient*/
+	color: #a00;
+}
+
+label {
+	font-size: 120%;
+}
+
+.styleB {
+	width: 104px;
+	height: 25px;
+}
