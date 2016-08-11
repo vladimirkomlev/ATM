@@ -10,25 +10,34 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 @WebServlet("/anothersum")
+// TODO: 8/11/16 eugene - bad class name
 public class AnotherSum extends SelectionOperation {
 
+	// TODO: 8/11/16 eugene - redundant empty javadoc
 	/**
 	 * 
 	 */
+	// TODO: 8/11/16 eugene - you don't need serialVersionUID
 	private static final long serialVersionUID = 1L;
+	// TODO: 8/11/16 eugene - static final constants should be in uppercase
 	private static final Logger log = Logger.getLogger(AnotherSum.class);
 	private static final String JSP_ANOTHERSUM_PATH = "WEB-INF/jsp/anothersum.jsp";
 	private static final String JSP_PUTCASH_PATH = "WEB-INF/jsp/putcash.jsp";
 	private static final String JSP_GETCASH_PATH = "WEB-INF/jsp/getcash.jsp";
 
+	// TODO: 8/11/16 eugene - add @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		// TODO: 8/11/16 eugene - why you call 'init' explicitly? Servlet container will call it
 		init();
 		request.getRequestDispatcher(JSP_ANOTHERSUM_PATH).forward(request, response);
 	}
 
+	// TODO: 8/11/16 eugene - overcomplicated method
+	// TODO: 8/11/16 eugene - add @Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		// TODO: 8/11/16 eugene - why you call 'init' explicitly? Servlet container will call it
 		init();
 		String strConfirm = "Confirm";
 		String strCancel = "Cancel";
@@ -38,6 +47,7 @@ public class AnotherSum extends SelectionOperation {
 		boolean resultChoose = true;
 		String message = "";
 		int result = (int) servletContext.getAttribute("resultSum");
+		// TODO: 8/11/16 eugene - use some constants for operation codes
 		if (selectedOperation == 1) {
 			if (sbSubmitted.length() == strConfirm.length()) {
 				try {

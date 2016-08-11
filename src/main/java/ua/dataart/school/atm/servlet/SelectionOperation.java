@@ -23,12 +23,16 @@ import ua.dataart.school.atm.operations.ZipArchive;
 import ua.dataart.school.atm.storage.BanknoteStorage;
 
 @WebServlet("/selection")
+// TODO: 8/11/16 eugene - bad class name
 public class SelectionOperation extends HttpServlet {
 
+	// TODO: 8/11/16 eugene - redundant empty javadoc
 	/**
-	 * 
+	 *
 	 */
+	// TODO: 8/11/16 eugene - you don't need serialVersionUID
 	private static final long serialVersionUID = 1L;
+	// TODO: 8/11/16 eugene - static final constants should be in uppercase
 	private static final Logger log = Logger.getLogger(SelectionOperation.class);
 	private static final String ARCHIVE_PATH = "logs/";
 	private static final String LOG_PATH = "atm";
@@ -37,9 +41,12 @@ public class SelectionOperation extends HttpServlet {
 	protected ServletContext servletContext;
 	protected BanknoteStorage banknoteStorage;
 	protected Operations operations;
+	// TODO: 8/11/16 eugene - unused field
 	protected Properties properties;
+	// TODO: 8/11/16 eugene - redundant commented code
 //	protected StringBuilder realPath;
 
+	// TODO: 8/11/16 eugene - add @Override
 	public void init() throws ServletException {
 		servletContext = getServletContext();
 		operations = (Operations) servletContext.getAttribute("operations");
@@ -47,6 +54,7 @@ public class SelectionOperation extends HttpServlet {
 //		realPath = (StringBuilder) servletContext.getAttribute("realPath");
 	}
 
+	// TODO: 8/11/16 eugene - add @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		init();
@@ -54,6 +62,7 @@ public class SelectionOperation extends HttpServlet {
 
 	}
 
+	// TODO: 8/11/16 eugene - add @Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String pathToArchive = getArchiveLogs();
@@ -111,6 +120,7 @@ public class SelectionOperation extends HttpServlet {
 		List<Banknote> storage = new BanknoteStorage().getBanknotes();
 		Integer index = 0;
 		for (Banknote banknote : storage) {
+			// TODO: 8/11/16 eugene - terrible copypaste hardcode
 			if (index == 0) {
 				banknote.setValue(500);
 				banknote.setCount(Integer.parseInt(request.getParameter(index.toString())));
@@ -159,7 +169,10 @@ public class SelectionOperation extends HttpServlet {
 		String currentValue;
 		for (Integer index = 0; index < 5; index++) {
 			currentValue = request.getParameter(index.toString());
+			// TODO: 8/11/16 eugene - this is the only place you use Apache Commons. Better to write your own simple method
+			// TODO: 8/11/16 eugene - try to avoid using deprecated classes and methods
 			result = NumberUtils.isNumber(currentValue);
+			// TODO: 8/11/16 eugene - just 'if (!result)'
 			if (result == false) {
 				break;
 			}

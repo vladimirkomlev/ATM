@@ -10,12 +10,13 @@ public class BanknoteStorage {
 	private List<Banknote> banknotes = new ArrayList<>();
 
 	public BanknoteStorage() {
+		// TODO: 8/11/16 eugene - strange banknotes with zero values
 		Banknote banknote1 = new Banknote(0, 0);
 		Banknote banknote2 = new Banknote(0, 0);
 		Banknote banknote3 = new Banknote(0, 0);
 		Banknote banknote4 = new Banknote(0, 0);
 		Banknote banknote5 = new Banknote(0, 0);
-
+		// TODO: 8/11/16 eugene - banknotes here are the same. You could just add them in loop
 		banknotes.add(banknote1);
 		banknotes.add(banknote2);
 		banknotes.add(banknote3);
@@ -31,6 +32,7 @@ public class BanknoteStorage {
 		this.banknotes = banknotes;
 	}
 
+	// TODO: 8/11/16 eugene - add @Override
 	public String toString() {
 		return "BanknoteStorage:[" + banknotes + "]";
 	}

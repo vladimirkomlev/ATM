@@ -13,12 +13,16 @@ import org.apache.log4j.Logger;
 import ua.dataart.school.atm.domain.Banknote;
 
 @WebServlet("/putcash")
+// TODO: 8/11/16 eugene - bad class name
 public class PutCash extends SelectionOperation {
 
+	// TODO: 8/11/16 eugene - redundant empty javadoc
 	/**
-	 * 
+	 *
 	 */
+	// TODO: 8/11/16 eugene - you don't need serialVersionUID
 	private static final long serialVersionUID = 1L;
+	// TODO: 8/11/16 eugene - static final constants should be in uppercase
 	private static final Logger log = Logger.getLogger(PutCash.class);
 	private static final String JSP_PUTCASH_PATH = "WEB-INF/jsp/putcash.jsp";
 	private static final String JSP_ANOTHERSUM_PATH = "WEB-INF/jsp/anothersum.jsp";
@@ -30,6 +34,7 @@ public class PutCash extends SelectionOperation {
 		request.getRequestDispatcher(JSP_PUTCASH_PATH).forward(request, response);
 	}
 
+	// TODO: 8/11/16 eugene - overcomplicated method, rework
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {

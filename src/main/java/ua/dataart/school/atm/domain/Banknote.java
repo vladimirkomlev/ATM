@@ -10,6 +10,7 @@ public class Banknote implements Cloneable{
 		this.count = count;
 	}
 
+	// TODO: 8/11/16 eugene - redundant constructor
 	public Banknote() {
 	}
 
@@ -21,6 +22,7 @@ public class Banknote implements Cloneable{
 		return count;
 	}
 
+	// TODO: 8/11/16 eugene - it's really strange that banknote can change values
 	public void setValue(int value) {
 		this.value = value;
 	}
@@ -29,13 +31,16 @@ public class Banknote implements Cloneable{
 		this.count = count;
 	}
 
+	// TODO: 8/11/16 eugene - add @Override
 	public String toString() {
 		return "Banknote:[value=" + value + ", count=" + count + "]";
 	}
-	
+
+	// TODO: 8/11/16 eugene - add @Override
 	public Banknote clone() throws CloneNotSupportedException {
+		// TODO: 8/11/16 eugene - strange formatting
 			return (Banknote)super.clone();
-		
+
 	}
 
 }
