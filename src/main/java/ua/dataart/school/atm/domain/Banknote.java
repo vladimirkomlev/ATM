@@ -10,10 +10,6 @@ public class Banknote implements Cloneable{
 		this.count = count;
 	}
 
-	// TODO: 8/11/16 eugene - redundant constructor
-	public Banknote() {
-	}
-
 	public int getValue() {
 		return value;
 	}
@@ -31,14 +27,15 @@ public class Banknote implements Cloneable{
 		this.count = count;
 	}
 
-	// TODO: 8/11/16 eugene - add @Override
+	@Override
 	public String toString() {
 		return "Banknote:[value=" + value + ", count=" + count + "]";
 	}
 
-	// TODO: 8/11/16 eugene - add @Override
+	@Override
 	public Banknote clone() throws CloneNotSupportedException {
 		// TODO: 8/11/16 eugene - strange formatting
+		// vova - What do is strange with formatting?
 			return (Banknote)super.clone();
 
 	}

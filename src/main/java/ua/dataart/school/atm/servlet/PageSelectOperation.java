@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -18,43 +17,34 @@ import org.apache.commons.lang.NumberUtils;
 import org.apache.log4j.Logger;
 
 import ua.dataart.school.atm.domain.Banknote;
-import ua.dataart.school.atm.operations.Operations;
+import ua.dataart.school.atm.operations.OperationOfBanknote;
 import ua.dataart.school.atm.operations.ZipArchive;
 import ua.dataart.school.atm.storage.BanknoteStorage;
 
 @WebServlet("/selection")
 // TODO: 8/11/16 eugene - bad class name
-public class SelectionOperation extends HttpServlet {
+//vova - SelectionOperation renamed on PageSelectOperation
+public class PageSelectOperation extends HttpServlet {
 
-	// TODO: 8/11/16 eugene - redundant empty javadoc
-	/**
-	 *
-	 */
 	// TODO: 8/11/16 eugene - you don't need serialVersionUID
 	private static final long serialVersionUID = 1L;
-	// TODO: 8/11/16 eugene - static final constants should be in uppercase
-	private static final Logger log = Logger.getLogger(SelectionOperation.class);
+	private static final Logger LOG = Logger.getLogger(PageSelectOperation.class);
 	private static final String ARCHIVE_PATH = "logs/";
 	private static final String LOG_PATH = "atm";
 	private static final String TRIM_PATH = "webapps";
 	private static final String NAME_FILE_ARCHIVE = "atmArchive.zip";
 	protected ServletContext servletContext;
 	protected BanknoteStorage banknoteStorage;
-	protected Operations operations;
-	// TODO: 8/11/16 eugene - unused field
-	protected Properties properties;
-	// TODO: 8/11/16 eugene - redundant commented code
-//	protected StringBuilder realPath;
+	protected OperationOfBanknote operationOfBanknote;
 
-	// TODO: 8/11/16 eugene - add @Override
+	@Override
 	public void init() throws ServletException {
 		servletContext = getServletContext();
-		operations = (Operations) servletContext.getAttribute("operations");
+		operationOfBanknote = (OperationOfBanknote) servletContext.getAttribute("operations");
 		banknoteStorage = (BanknoteStorage) servletContext.getAttribute("banknoteStorage");
-//		realPath = (StringBuilder) servletContext.getAttribute("realPath");
 	}
 
-	// TODO: 8/11/16 eugene - add @Override
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		init();
@@ -62,7 +52,7 @@ public class SelectionOperation extends HttpServlet {
 
 	}
 
-	// TODO: 8/11/16 eugene - add @Override
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String pathToArchive = getArchiveLogs();
@@ -81,7 +71,7 @@ public class SelectionOperation extends HttpServlet {
 			out.flush();
 			out.close();
 		} catch (IOException e) {
-			log.info("File not found or damaged. " + e.fillInStackTrace());
+			LOG.info("File not found or damaged. " + e.fillInStackTrace());
 		}
 		return;
 	}
@@ -151,7 +141,7 @@ public class SelectionOperation extends HttpServlet {
 	}
 
 	protected void saveInformationInLog(String informationAboutTransaction) {
-		List<Banknote> saveStorageBonknotes = operations.getSaveStorage();
+		List<Banknote> saveStorageBonknotes = operationOfBanknote.getSaveStorage();
 		StringBuilder sbResult = new StringBuilder();
 		sbResult.append(informationAboutTransaction);
 		for (Banknote banknote : saveStorageBonknotes) {
@@ -161,7 +151,7 @@ public class SelectionOperation extends HttpServlet {
 			}
 		}
 		sbResult.deleteCharAt(sbResult.length() - 1);
-		log.info(sbResult);
+		LOG.info(sbResult);
 	}
 
 	protected Boolean validationForInteger(HttpServletRequest request) {
@@ -172,8 +162,7 @@ public class SelectionOperation extends HttpServlet {
 			// TODO: 8/11/16 eugene - this is the only place you use Apache Commons. Better to write your own simple method
 			// TODO: 8/11/16 eugene - try to avoid using deprecated classes and methods
 			result = NumberUtils.isNumber(currentValue);
-			// TODO: 8/11/16 eugene - just 'if (!result)'
-			if (result == false) {
+			if (!result) {
 				break;
 			}
 

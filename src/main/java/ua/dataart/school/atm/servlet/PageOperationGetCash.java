@@ -14,16 +14,12 @@ import ua.dataart.school.atm.domain.Banknote;
 
 @WebServlet("/getcash")
 // TODO: 8/11/16 eugene - bad class name
-public class GetCash extends SelectionOperation {
+//vova - GetCash renamed on PageOperationGetCash
+public class PageOperationGetCash extends PageSelectOperation {
 
-	// TODO: 8/11/16 eugene - redundant empty javadoc
-	/**
-	 * 
-	 */
 	// TODO: 8/11/16 eugene - you don't need serialVersionUID
 	private static final long serialVersionUID = 1L;
-	// TODO: 8/11/16 eugene - static final constants should be in uppercase
-	private static final Logger log = Logger.getLogger(GetCash.class);
+	private static final Logger LOG = Logger.getLogger(PageOperationGetCash.class);
 	private static final String JSP_GETCASH_PATH = "WEB-INF/jsp/getcash.jsp";
 	private static final String JSP_ANOTHERSUM_PATH = "WEB-INF/jsp/anothersum.jsp";
 
@@ -68,28 +64,28 @@ public class GetCash extends SelectionOperation {
 		}
 
 		List<Banknote> storage = getDataFromJsp(request);
-		int requiredSum = operations.getSumFromBanknoteStorageInput(storage);
+		int requiredSum = operationOfBanknote.getSumFromBanknoteStorageInput(storage);
 		banknoteStorage.setBanknotes(storage);
 		int resultSum = 0;
 		try {
-			resultSum = operations.getCash(banknoteStorage);
+			resultSum = operationOfBanknote.getCash(banknoteStorage);
 		} catch (CloneNotSupportedException e) {
-			log.info("The cloning operation failed. " + e.fillInStackTrace());
+			LOG.info("The cloning operation failed. " + e.fillInStackTrace());
 		}
 
 		if (requiredSum == 0) {
 			message = "Entered amount should be greater than zero. Please, enter the correct value.";
 			sendValuesToJsp(message, resultChoose, JSP_GETCASH_PATH, request, response);
 		} else if (resultSum == 0) {
-			resultSum = operations.getCashWhenResultSumLessRequiredSum();
+			resultSum = operationOfBanknote.getCashWhenResultSumLessRequiredSum();
 			if (resultSum == 0) {
 				message = "Unfortunately the requested banknotes is missing in the ATM";
 				sendValuesToJsp(message, resultChoose, JSP_GETCASH_PATH, request, response);
 			} else {
 				message = "Unfortunately we can not give you the required amount in the requested banknotes. We can give you sum "
 						+ resultSum + " the following denominations of banknotes:";
-				banknoteStorage.setBanknotes(operations.getSaveStorage());
-				banknoteStorage.setBanknotes(operations.getSaveStorage());
+				banknoteStorage.setBanknotes(operationOfBanknote.getSaveStorage());
+				banknoteStorage.setBanknotes(operationOfBanknote.getSaveStorage());
 				servletContext.setAttribute("resultSum", resultSum);
 				servletContext.setAttribute("selectedOperation", 1);
 				servletContext.setAttribute("informationTransaction", informationTransaction);
@@ -97,18 +93,18 @@ public class GetCash extends SelectionOperation {
 			}
 		} else if (requiredSum == resultSum) {
 			try {
-				operations.saveCurrentStorageInMemory();
+				operationOfBanknote.saveCurrentStorageInMemory();
 				saveInformationInLog(informationTransaction);
 			} catch (CloneNotSupportedException e) {
-				log.info("The cloning operation failed. " + e.fillInStackTrace());
+				LOG.info("The cloning operation failed. " + e.fillInStackTrace());
 			}
 			message = "You got: " + resultSum;
 			sendValuesToJsp(message, resultChoose, JSP_GETCASH_PATH, request, response);
 		} else if (requiredSum > resultSum) {
-			resultSum = operations.getCashWhenResultSumLessRequiredSum();
+			resultSum = operationOfBanknote.getCashWhenResultSumLessRequiredSum();
 			message = "Unfortunately we can not give you the required amount in the requested banknotes. We can give you sum "
 					+ resultSum + " the following denominations of banknotes:";
-			banknoteStorage.setBanknotes(operations.getSaveStorage());
+			banknoteStorage.setBanknotes(operationOfBanknote.getSaveStorage());
 			servletContext.setAttribute("resultSum", resultSum);
 			servletContext.setAttribute("selectedOperation", 1);
 			servletContext.setAttribute("informationTransaction", informationTransaction);

@@ -32,7 +32,7 @@ public class BanknoteStorage {
 		this.banknotes = banknotes;
 	}
 
-	// TODO: 8/11/16 eugene - add @Override
+	@Override
 	public String toString() {
 		return "BanknoteStorage:[" + banknotes + "]";
 	}

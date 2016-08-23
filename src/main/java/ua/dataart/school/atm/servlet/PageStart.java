@@ -12,63 +12,47 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import ua.dataart.school.atm.operations.Operations;
+import ua.dataart.school.atm.operations.OperationOfBanknote;
 import ua.dataart.school.atm.storage.BanknoteStorage;
 
 @WebServlet("/")
 // TODO: 8/11/16 eugene - bad class name
-public class AtmStart extends HttpServlet {
+// vova - AtmStart renamed on PageStart
+public class PageStart extends HttpServlet {
 
-	// TODO: 8/11/16 eugene - redundant empty javadoc
-	/**
-	 *
-	 */
 	// TODO: 8/11/16 eugene - you don't need serialVersionUID
+	//vova - IDE require create serialVersionUID
 	private static final long serialVersionUID = 1L;
-	// TODO: 8/11/16 eugene - static final constants should be in uppercase
-	private static final Logger log = Logger.getLogger(AtmStart.class);
-	private final String BANKNOTES_PROPERTIES_PATH = "WEB-INF/classes/banknote.properties";
+	private static final Logger LOG = Logger.getLogger(PageStart.class);
 	protected ServletContext servletContext;
 	protected BanknoteStorage banknoteStorage;
-	protected Operations operations;
+	protected OperationOfBanknote operationOfBanknote;
 	protected StringBuilder realPath;
-
-	// TODO: 8/11/16 eugene - add @Override
+	
+	@Override
 	public void init() throws ServletException {
 		servletContext = getServletContext();
 		try {
-			// TODO: 8/11/16 eugene - this is strange and messy
-			realPath = new StringBuilder();
 			ClassLoader classLoader=Thread.currentThread().getContextClassLoader();
 			InputStream inputStream = classLoader.getResourceAsStream("banknote.properties");
-			
-			log.info("inputStream available="+inputStream.available());
-			realPath.append(servletContext.getRealPath(BANKNOTES_PROPERTIES_PATH));
-			operations = new Operations(inputStream);
-			log.info("operation FilePath available="+operations.getFilePath().available());
+			operationOfBanknote = new OperationOfBanknote(inputStream);
 			banknoteStorage = new BanknoteStorage();
-			log.info("realPath / ="+servletContext.getRealPath("/"));
-			log.info("realPath="+realPath);
 			inputStream.close();
-			// TODO: 8/11/16 eugene - redundant commented code
-//			log.info("inputStream available="+inputStream.available());
 		} catch (IOException e) {
-			log.info("File not found or damaged. " + e.fillInStackTrace());
+			LOG.info("File not found or damaged. " + e.fillInStackTrace());
 		}
 
-		// TODO: 8/11/16 eugene - you never use "realPath"
-		servletContext.setAttribute("realPath", realPath);
-		servletContext.setAttribute("operations", operations);
+		servletContext.setAttribute("operations", operationOfBanknote);
 		servletContext.setAttribute("banknoteStorage", banknoteStorage);
 	}
 
-	// TODO: 8/11/16 eugene - add @Override
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		request.getRequestDispatcher("WEB-INF/jsp/atm.jsp").forward(request, response);
 	}
 
-	// TODO: 8/11/16 eugene - add @Override
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		init();

@@ -12,7 +12,7 @@ public class BanknoteTest {
 	
 	@Before
 	public void init() {
-		banknote=new Banknote();
+		banknote=new Banknote(10, 10);
 		banknote.setCount(10);
 		banknote.setValue(10);
 		banknote=new Banknote(10, 10);
