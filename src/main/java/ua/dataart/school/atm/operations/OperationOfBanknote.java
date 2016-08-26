@@ -61,7 +61,7 @@ public class OperationOfBanknote{
 
 	}
 
-	public static InputStream getFilePath() {
+	public static InputStream getInputStream() {
 		return inputStream;
 	}
 
@@ -71,29 +71,32 @@ public class OperationOfBanknote{
 	public int getCash(BanknoteStorage banknoteStorageInput) throws IOException, CloneNotSupportedException {
 		banknoteStorageFromCurrentStorage=getCopyStorageBanknote(banknoteStorageCurrent.getBanknotes());
 		saveStorage=new BanknoteStorage().getBanknotes();
-
+		saveCurrentAmount=0;
+		amountGivenOfBanknotes=0;
+		
 		requiredAmount=getSumFromBanknoteStorageInput(banknoteStorageInput.getBanknotes());
-		for (int index=0;index < banknoteStorageFromCurrentStorage.size();index++) {
-			Banknote inputBanknote=banknoteStorageInput.getBanknotes().get(index);
-			Banknote currentBanknote=banknoteStorageFromCurrentStorage.get(index);
-			Banknote savedBanknoteInSaveStorage=saveStorage.get(index);
-			if(currentBanknote.getValue()==inputBanknote.getValue() && inputBanknote.getCount() != 0){
-					currentCountOfBanknote = currentBanknote.getCount();
-					currentValueOfBanknote = currentBanknote.getValue();
-					inputCountOfBanknote = inputBanknote.getCount();
-					savedBanknoteInSaveStorage.setValue(currentValueOfBanknote);
-					availableCountOfBanknote = fixedCountGivenOfBanknotes - amountGivenOfBanknotes;
-					// TODO: 8/11/16 eugene - too much 'if' statements complicate code
-					if (availableCountOfBanknote > 0) {
-						// TODO: 8/11/16 eugene - in both conditions code is almost the same. Extract it to some method
-						saveResultInStorage(currentBanknote, savedBanknoteInSaveStorage);
-					}
-			}
-			
-			if(requiredAmount==saveCurrentAmount || amountGivenOfBanknotes>=fixedCountGivenOfBanknotes){
-				break;
-			}
-		}
+		workWithBanknotesForMethodsGetCashAndPutCach(banknoteStorageInput);
+//		for (int index=0;index < banknoteStorageFromCurrentStorage.size();index++) {
+//			Banknote inputBanknote=banknoteStorageInput.getBanknotes().get(index);
+//			Banknote currentBanknote=banknoteStorageFromCurrentStorage.get(index);
+//			Banknote savedBanknoteInSaveStorage=saveStorage.get(index);
+//			if(currentBanknote.getValue()==inputBanknote.getValue() && inputBanknote.getCount() != 0){
+//					currentCountOfBanknote = currentBanknote.getCount();
+//					currentValueOfBanknote = currentBanknote.getValue();
+//					inputCountOfBanknote = inputBanknote.getCount();
+//					savedBanknoteInSaveStorage.setValue(currentValueOfBanknote);
+//					availableCountOfBanknote = fixedCountGivenOfBanknotes - amountGivenOfBanknotes;
+//					// TODO: 8/11/16 eugene - too much 'if' statements complicate code
+//					if (availableCountOfBanknote > 0) {
+//						// TODO: 8/11/16 eugene - in both conditions code is almost the same. Extract it to some method
+//						saveResultInStorage(currentBanknote, savedBanknoteInSaveStorage);
+//					}
+//			}
+//			
+//			if(requiredAmount==saveCurrentAmount || amountGivenOfBanknotes>=fixedCountGivenOfBanknotes){
+//				break;
+//			}
+//		}
 		
 		return saveCurrentAmount;
 	}
@@ -231,6 +234,27 @@ public class OperationOfBanknote{
 
 	public void	saveCurrentStorageInMemory() throws CloneNotSupportedException{
 		banknoteStorageCurrent.setBanknotes(getCopyStorageBanknote(banknoteStorageFromCurrentStorage));
+	}
+	
+	private void workWithBanknotesForMethodsGetCashAndPutCach(BanknoteStorage banknoteStorageInput){
+		for(int index=0;index<banknoteStorageFromCurrentStorage.size();index++){
+			Banknote inputBanknote=banknoteStorageInput.getBanknotes().get(index);
+			Banknote currentBanknote=banknoteStorageFromCurrentStorage.get(index);
+			Banknote savedBanknoteInSaveStorage=saveStorage.get(index);
+			if(inputBanknote.getValue()==currentBanknote.getValue() && inputBanknote.getCount()!=0){
+				currentCountOfBanknote=currentBanknote.getCount();
+				currentValueOfBanknote=currentBanknote.getValue();
+				inputCountOfBanknote=inputBanknote.getCount();
+				savedBanknoteInSaveStorage.setValue(currentValueOfBanknote);
+				availableCountOfBanknote = fixedCountGivenOfBanknotes - amountGivenOfBanknotes;
+				if(availableCountOfBanknote>0){
+					saveResultInStorage(currentBanknote, savedBanknoteInSaveStorage);
+				}
+			}
+			if(requiredAmount==saveCurrentAmount || amountGivenOfBanknotes>=fixedCountGivenOfBanknotes){
+				break;
+			}
+		}
 	}
 	
 	private void saveResultInStorage(Banknote currentBanknote, Banknote savedBanknoteInStorage){

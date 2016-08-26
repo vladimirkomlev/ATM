@@ -14,9 +14,11 @@ public class TestOperationOfBanknote {
 		OperationOfBanknote operationOnBanknote=new OperationOfBanknote(inputStream);
 		BanknoteStorage storage=new BanknoteStorage();
 		storage.getBanknotes().get(0).setValue(500);
-		storage.getBanknotes().get(0).setCount(8);
-		storage.getBanknotes().get(1).setValue(200);
-		storage.getBanknotes().get(1).setCount(4);
+		storage.getBanknotes().get(0).setCount(10);
+//		storage.getBanknotes().get(1).setValue(200);
+//		storage.getBanknotes().get(1).setCount(4);
 		int saveAmount= operationOnBanknote.getCash(storage);
+		operationOnBanknote.saveCurrentStorageInMemory();
+		int saveAmout2=operationOnBanknote.getCash(storage);
 	}
 }
