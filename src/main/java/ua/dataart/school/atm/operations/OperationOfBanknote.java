@@ -19,40 +19,34 @@ public class OperationOfBanknote{
 	private static InputStream inputStream;
 	// TODO: 8/11/16 eugene - no need in keeping Properties in memory. You need them only during instantiation
 	private Properties properties;
-	// TODO: 8/11/16 eugene - some of fields below should be final
-	// TODO: 8/11/16 eugene - bad name for field. Its not current, it never changes
-	private BanknoteStorage banknoteStorageCurrent;
+	private BanknoteStorage storageOfBanknotes;
+	private List<Banknote> cloneStorageOfBanknotes;
 	// TODO: 8/11/16 eugene - bad name for field
-	private List<Banknote> banknoteStorageFromCurrentStorage;
-	// TODO: 8/11/16 eugene - bad name for field
-	private int maxCountOfValueFromFile;
+	private int maxCountOfBanknote;
 	// TODO: 8/11/16 eugene - bad name for field
 	private int fixedCountGivenOfBanknotes;
 	// TODO: 8/11/16 eugene - bad name for field
-	private List<Banknote> saveStorage;
+	private List<Banknote> savedStorage;
 	private int requiredAmount;
 	// TODO: 8/11/16 eugene - bad name for field
-	private int saveCurrentAmount;
+	private int savedCurrentAmount;
 	// TODO: 8/11/16 eugene - bad name for field
 	private int amountGivenOfBanknotes;
-	// TODO: 8/11/16 eugene - bad name for field
-	private int countHelper;
 	// TODO: 8/11/16 eugene - bad name for field
 	private int inputCountOfBanknote;
 	private int availableCountOfBanknote;
 	private int currentCountOfBanknote;
 	private int currentValueOfBanknote;
+	private int flagForMethodWorkWithBanknote;
 
 	public OperationOfBanknote(InputStream inStream) {
 		try {
 			OperationOfBanknote.inputStream = inStream;
 			properties=new Properties();
 			properties.load(inputStream);
-			banknoteStorageCurrent=new BanknoteStorage();
-			// TODO: 8/11/16 eugene - this is really strange construction
-			// TODO: 8/11/16 eugene - for getting banknote list you create another BanknoteStorage
-			banknoteStorageCurrent.setBanknotes(getBanknoteStorageFromFile());
-			maxCountOfValueFromFile=getValueOfNameFromFile("maxCount");
+			storageOfBanknotes=new BanknoteStorage(getArrayPropertiesBanknotes("value").length);
+			storageOfBanknotes.setBanknotes(getBanknoteStorageFromFile());
+			maxCountOfBanknote=getValueOfNameFromFile("maxCount");
 			fixedCountGivenOfBanknotes=getValueOfNameFromFile("fixedCountGiven");
 		} catch (IOException e) {
 			// TODO: 8/11/16 eugene - is it really normal to continue working if your key instance broke down?
@@ -65,133 +59,123 @@ public class OperationOfBanknote{
 		return inputStream;
 	}
 
-	// TODO: 8/11/16 eugene - overcomplicated method. Rework and split into separate methods
-	// TODO: 8/11/16 eugene - 'get' means this is getter-method. Rename or make it getter
-	// TODO: 8/11/16 eugene - not informative argument name
-	public int getCash(BanknoteStorage banknoteStorageInput) throws IOException, CloneNotSupportedException {
-		banknoteStorageFromCurrentStorage=getCopyStorageBanknote(banknoteStorageCurrent.getBanknotes());
-		saveStorage=new BanknoteStorage().getBanknotes();
-		saveCurrentAmount=0;
-		amountGivenOfBanknotes=0;
+	public int giveRequiredCash(BanknoteStorage inputStorageOfBanknotes) throws IOException, CloneNotSupportedException {
+		initPrimaryValues();
+		//field flagForMethodWorkWithBanknote initialize positive value for work method workWithBanknotesForMethodsGiveRequiredCashAndAcceptInputCash
+		flagForMethodWorkWithBanknote=1;
+		workWithBanknotesForMethodsGiveRequiredCashAndAcceptInputCash(inputStorageOfBanknotes);
 		
-		requiredAmount=getSumFromBanknoteStorageInput(banknoteStorageInput.getBanknotes());
-		workWithBanknotesForMethodsGetCashAndPutCach(banknoteStorageInput);
-//		for (int index=0;index < banknoteStorageFromCurrentStorage.size();index++) {
-//			Banknote inputBanknote=banknoteStorageInput.getBanknotes().get(index);
-//			Banknote currentBanknote=banknoteStorageFromCurrentStorage.get(index);
-//			Banknote savedBanknoteInSaveStorage=saveStorage.get(index);
-//			if(currentBanknote.getValue()==inputBanknote.getValue() && inputBanknote.getCount() != 0){
-//					currentCountOfBanknote = currentBanknote.getCount();
-//					currentValueOfBanknote = currentBanknote.getValue();
-//					inputCountOfBanknote = inputBanknote.getCount();
-//					savedBanknoteInSaveStorage.setValue(currentValueOfBanknote);
-//					availableCountOfBanknote = fixedCountGivenOfBanknotes - amountGivenOfBanknotes;
-//					// TODO: 8/11/16 eugene - too much 'if' statements complicate code
-//					if (availableCountOfBanknote > 0) {
-//						// TODO: 8/11/16 eugene - in both conditions code is almost the same. Extract it to some method
-//						saveResultInStorage(currentBanknote, savedBanknoteInSaveStorage);
-//					}
-//			}
-//			
-//			if(requiredAmount==saveCurrentAmount || amountGivenOfBanknotes>=fixedCountGivenOfBanknotes){
-//				break;
-//			}
-//		}
-		
-		return saveCurrentAmount;
+		return savedCurrentAmount;
+	}
+	
+	public int acceptInputCash(BanknoteStorage inputStorageOfBanknotes) throws IOException, CloneNotSupportedException {
+		initPrimaryValues();
+		//field flagForMethodWorkWithBanknote initialize negative value for work method workWithBanknotesForMethodsGiveRequiredCashAndAcceptInputCash
+		flagForMethodWorkWithBanknote = -1;
+		workWithBanknotesForMethodsGiveRequiredCashAndAcceptInputCash(inputStorageOfBanknotes);
+
+		return savedCurrentAmount;
 	}
 
-	// TODO: 8/11/16 eugene - this method looks like previous. Same method - same problems
-	public int getCashWhenResultSumLessRequiredSum() {
-		if(amountGivenOfBanknotes>=fixedCountGivenOfBanknotes){
-			System.out.println("saveCurrentSum="+saveCurrentAmount);
-			return saveCurrentAmount;
+	public int giveRemainingAmountOfCash() {
+		if (amountGivenOfBanknotes >= fixedCountGivenOfBanknotes) {
+			return savedCurrentAmount;
 		}
-		int missingAmount=requiredAmount-saveCurrentAmount;
-		int resultValueOfBanknote=0;
-		for(int index2=0;index2<banknoteStorageFromCurrentStorage.size();index2++){
-			if(banknoteStorageFromCurrentStorage.get(index2).getCount()!=0){
-				if(missingAmount>=banknoteStorageFromCurrentStorage.get(index2).getValue()){
-					currentCountOfBanknote=banknoteStorageFromCurrentStorage.get(index2).getCount();
-					currentValueOfBanknote=banknoteStorageFromCurrentStorage.get(index2).getValue();
-					resultValueOfBanknote=missingAmount/currentValueOfBanknote;
-					saveStorage.get(index2).setValue(currentValueOfBanknote);
-					availableCountOfBanknote=fixedCountGivenOfBanknotes-amountGivenOfBanknotes;
-					if(resultValueOfBanknote>currentCountOfBanknote){
-						countHelper=currentCountOfBanknote;
-						if(currentCountOfBanknote>availableCountOfBanknote){
-							currentCountOfBanknote=availableCountOfBanknote;
-						}
-						saveCurrentAmount+=currentCountOfBanknote*currentValueOfBanknote;
-						saveStorage.get(index2).setCount(currentCountOfBanknote);
-						missingAmount=requiredAmount-saveCurrentAmount;
-						amountGivenOfBanknotes+=currentCountOfBanknote;
-						currentCountOfBanknote=countHelper-currentCountOfBanknote;
-						banknoteStorageFromCurrentStorage.get(index2).setCount(currentCountOfBanknote);
-					}else if(resultValueOfBanknote<=currentCountOfBanknote){
-						if(resultValueOfBanknote>availableCountOfBanknote){
-							resultValueOfBanknote=availableCountOfBanknote;
-						}
-						saveCurrentAmount+=resultValueOfBanknote*currentValueOfBanknote;
-						saveStorage.get(index2).setCount(resultValueOfBanknote);
-						amountGivenOfBanknotes+=resultValueOfBanknote;
-						missingAmount=requiredAmount-saveCurrentAmount;
-						currentCountOfBanknote-=resultValueOfBanknote;
-						banknoteStorageFromCurrentStorage.get(index2).setCount(currentCountOfBanknote);
-					}
-				}
+		int resultOfCountForRequiredAmount = 0;
+		for (int index = 0; index < cloneStorageOfBanknotes.size(); index++) {
+			int missingAmount = requiredAmount - savedCurrentAmount;
+			LOG.info("missingAmount=" + missingAmount);
+			Banknote currentBanknote = cloneStorageOfBanknotes.get(index);
+			Banknote currentBanknoteInSavedStorage = savedStorage.get(index);
+			if (currentBanknote.getCount() != 0 && missingAmount >= currentBanknote.getValue()) {
+				currentCountOfBanknote = currentBanknote.getCount();
+				currentValueOfBanknote = currentBanknote.getValue();
+				resultOfCountForRequiredAmount = missingAmount / currentValueOfBanknote;
+				availableCountOfBanknote = fixedCountGivenOfBanknotes - amountGivenOfBanknotes;
+				saveResultInStorageForGiveRemainingAmountOfCash(resultOfCountForRequiredAmount,
+						currentBanknoteInSavedStorage, currentBanknote);
 			}
-			if(requiredAmount==saveCurrentAmount){
-				System.out.println("requiredAmount="+saveCurrentAmount);
-				return saveCurrentAmount;
-			}
-			if(amountGivenOfBanknotes>=fixedCountGivenOfBanknotes){
-				return saveCurrentAmount;
-			}
-		}
-		System.out.println("saveCurrentSum="+saveCurrentAmount);
-		return saveCurrentAmount;
-	}
-
-	// TODO: 8/11/16 eugene - it all looks pretty much the same
-	public int putCash(BanknoteStorage banknoteStorageInput) throws IOException, CloneNotSupportedException {
-		banknoteStorageFromCurrentStorage=getCopyStorageBanknote(banknoteStorageCurrent.getBanknotes());
-		saveStorage=new BanknoteStorage().getBanknotes();
-		List<Banknote> storage=banknoteStorageFromCurrentStorage;
-		int saveCurrentAmountPutCash=0;
-		int requiredAmountPutCash;
-
-		requiredAmountPutCash=getSumFromBanknoteStorageInput(banknoteStorageInput.getBanknotes());
-		for(int index=0;index<storage.size();index++){
-			Banknote inputBanknote=banknoteStorageInput.getBanknotes().get(index);
-			if(storage.get(index).getValue()==inputBanknote.getValue() && inputBanknote.getCount() != 0){
-				currentCountOfBanknote = storage.get(index).getCount();
-				currentValueOfBanknote = storage.get(index).getValue();
-				inputCountOfBanknote = inputBanknote.getCount();
-				saveStorage.get(index).setValue(currentValueOfBanknote);
-
-				if (maxCountOfValueFromFile > currentCountOfBanknote) {
-					if ((maxCountOfValueFromFile - currentCountOfBanknote) < inputCountOfBanknote) {
-						inputCountOfBanknote = maxCountOfValueFromFile - currentCountOfBanknote;
-					}
-					saveCurrentAmountPutCash += inputCountOfBanknote * currentValueOfBanknote;
-					saveStorage.get(index).setCount(inputCountOfBanknote);
-					currentCountOfBanknote += inputCountOfBanknote;
-					storage.get(index).setCount(currentCountOfBanknote);
-				}
-			}
-			if(requiredAmountPutCash==saveCurrentAmountPutCash){
-				System.out.println("saveCurrentAmount="+saveCurrentAmountPutCash);
+			if (requiredAmount == savedCurrentAmount || amountGivenOfBanknotes >= fixedCountGivenOfBanknotes) {
 				break;
 			}
 		}
-
-		return saveCurrentAmountPutCash;
+		return savedCurrentAmount;
 	}
 	
+	private void saveResultInStorageForGiveRemainingAmountOfCash(int numberOfBanknotesForShortfallAmount, Banknote banknoteInSavedStorage, Banknote currentBanknote){
+		if (numberOfBanknotesForShortfallAmount > currentCountOfBanknote) {
+			numberOfBanknotesForShortfallAmount = currentCountOfBanknote;
+		}
+		if (numberOfBanknotesForShortfallAmount > availableCountOfBanknote) {
+			numberOfBanknotesForShortfallAmount = availableCountOfBanknote;
+		}
+		savedCurrentAmount += numberOfBanknotesForShortfallAmount * currentValueOfBanknote;
+		banknoteInSavedStorage.setValue(currentValueOfBanknote);
+		banknoteInSavedStorage.setCount(numberOfBanknotesForShortfallAmount);
+		amountGivenOfBanknotes += numberOfBanknotesForShortfallAmount;
+		currentCountOfBanknote -= numberOfBanknotesForShortfallAmount;
+		currentBanknote.setCount(currentCountOfBanknote);
+	}
 	
+	private void workWithBanknotesForMethodsGiveRequiredCashAndAcceptInputCash(BanknoteStorage inputStorageOfBanknotes) {
+		requiredAmount=getAmountFromInputStorageOfBanknotes(inputStorageOfBanknotes.getBanknotes());
+		for (int index = 0; index < cloneStorageOfBanknotes.size(); index++) {
+			Banknote inputBanknote = inputStorageOfBanknotes.getBanknotes().get(index);
+			Banknote currentBanknote = cloneStorageOfBanknotes.get(index);
+			Banknote currentBanknoteInSavedStorage = savedStorage.get(index);
+			if (inputBanknote.getValue() == currentBanknote.getValue() && inputBanknote.getCount() != 0) {
+				currentCountOfBanknote = currentBanknote.getCount();
+				currentValueOfBanknote = currentBanknote.getValue();
+				inputCountOfBanknote = inputBanknote.getCount();
+				availableCountOfBanknote = fixedCountGivenOfBanknotes - amountGivenOfBanknotes;
+				if (flagForMethodWorkWithBanknote < 0) {
+					saveResultInStorageForAcceptInputCash(currentBanknote, currentBanknoteInSavedStorage);
+				} else if(flagForMethodWorkWithBanknote > 0) {
+					saveResultInStorageForGiveRequiredCash(currentBanknote, currentBanknoteInSavedStorage);					
+				}
+			}
+			if (requiredAmount == savedCurrentAmount || amountGivenOfBanknotes >= fixedCountGivenOfBanknotes) {
+				break;
+			}
+		}
+	}
 
-	public int getSumFromBanknoteStorageInput(List<Banknote> storage) {
+	private void saveResultInStorageForGiveRequiredCash(Banknote currentBanknote, Banknote savedBanknoteInSavedStorage) {
+		if (inputCountOfBanknote > currentCountOfBanknote) {
+			inputCountOfBanknote = currentCountOfBanknote;
+		}
+		if (inputCountOfBanknote > availableCountOfBanknote) {
+			inputCountOfBanknote = availableCountOfBanknote;
+		}
+		savedCurrentAmount += inputCountOfBanknote * currentValueOfBanknote;
+		savedBanknoteInSavedStorage.setValue(currentValueOfBanknote);
+		savedBanknoteInSavedStorage.setCount(inputCountOfBanknote);
+		amountGivenOfBanknotes += inputCountOfBanknote;
+		currentCountOfBanknote -= inputCountOfBanknote;
+		currentBanknote.setCount(currentCountOfBanknote);
+	}
+	
+	private void saveResultInStorageForAcceptInputCash(Banknote currentBanknote, Banknote savedBanknoteInSavedStorage) {
+		if (maxCountOfBanknote > currentCountOfBanknote) {
+			if ((maxCountOfBanknote - currentCountOfBanknote) < inputCountOfBanknote) {
+				inputCountOfBanknote = maxCountOfBanknote - currentCountOfBanknote;
+			}
+			savedCurrentAmount += inputCountOfBanknote * currentValueOfBanknote;
+			savedBanknoteInSavedStorage.setValue(currentValueOfBanknote);
+			savedBanknoteInSavedStorage.setCount(inputCountOfBanknote);
+			currentCountOfBanknote += inputCountOfBanknote;
+			currentBanknote.setCount(currentCountOfBanknote);
+		}
+	}
+	
+	private void initPrimaryValues() throws CloneNotSupportedException{
+		cloningStorageOfBanknotes();
+		savedStorage=new BanknoteStorage().getBanknotes();
+		savedCurrentAmount=0;
+		amountGivenOfBanknotes=0;
+	}
+	
+	public int getAmountFromInputStorageOfBanknotes(List<Banknote> storage) {
 		// TODO: 8/11/16 eugene - variable with the same name as field. That's really bad practice
 		int requiredAmount=0;
 		for (Banknote banknote : storage) {
@@ -221,64 +205,22 @@ public class OperationOfBanknote{
 
 	// TODO: 8/11/16 eugene - Better receive Properties as an argument
 	public int getValueOfNameFromFile(String inputValue) {
-		// TODO: 8/11/16 eugene - you could do this in single line
-		// TODO: 8/11/16 eugene - return Integer.parseInt(properties.getProperty(inputValue));
-		int intResult;
-		intResult=Integer.parseInt(properties.getProperty(inputValue));
-		return intResult;
+		return Integer.parseInt(properties.getProperty(inputValue));
 	}
 
 	public List<Banknote> getSaveStorage() {
-		return saveStorage;
+		return savedStorage;
 	}
 
 	public void	saveCurrentStorageInMemory() throws CloneNotSupportedException{
-		banknoteStorageCurrent.setBanknotes(getCopyStorageBanknote(banknoteStorageFromCurrentStorage));
+		storageOfBanknotes.setBanknotes(cloneStorageOfBanknotes);
 	}
 	
-	private void workWithBanknotesForMethodsGetCashAndPutCach(BanknoteStorage banknoteStorageInput){
-		for(int index=0;index<banknoteStorageFromCurrentStorage.size();index++){
-			Banknote inputBanknote=banknoteStorageInput.getBanknotes().get(index);
-			Banknote currentBanknote=banknoteStorageFromCurrentStorage.get(index);
-			Banknote savedBanknoteInSaveStorage=saveStorage.get(index);
-			if(inputBanknote.getValue()==currentBanknote.getValue() && inputBanknote.getCount()!=0){
-				currentCountOfBanknote=currentBanknote.getCount();
-				currentValueOfBanknote=currentBanknote.getValue();
-				inputCountOfBanknote=inputBanknote.getCount();
-				savedBanknoteInSaveStorage.setValue(currentValueOfBanknote);
-				availableCountOfBanknote = fixedCountGivenOfBanknotes - amountGivenOfBanknotes;
-				if(availableCountOfBanknote>0){
-					saveResultInStorage(currentBanknote, savedBanknoteInSaveStorage);
-				}
-			}
-			if(requiredAmount==saveCurrentAmount || amountGivenOfBanknotes>=fixedCountGivenOfBanknotes){
-				break;
-			}
+	private void cloningStorageOfBanknotes() throws CloneNotSupportedException {
+		cloneStorageOfBanknotes=new ArrayList<Banknote>(storageOfBanknotes.getBanknotes().size());
+		for(Banknote banknote: storageOfBanknotes.getBanknotes()){
+			cloneStorageOfBanknotes.add(banknote.clone());
 		}
-	}
-	
-	private void saveResultInStorage(Banknote currentBanknote, Banknote savedBanknoteInStorage){
-		if(inputCountOfBanknote>currentCountOfBanknote){
-			inputCountOfBanknote=currentCountOfBanknote;
-		}
-		if(inputCountOfBanknote>availableCountOfBanknote){
-			inputCountOfBanknote=availableCountOfBanknote;
-		}
-		saveCurrentAmount+=inputCountOfBanknote*currentValueOfBanknote;
-		savedBanknoteInStorage.setCount(inputCountOfBanknote);
-		amountGivenOfBanknotes+=inputCountOfBanknote;
-		currentCountOfBanknote-=inputCountOfBanknote;
-		currentBanknote.setCount(currentCountOfBanknote);
-	}
-	
-	// TODO: 8/11/16 eugene - maybe 'cloneBanknotes' is a better name?
-	private List<Banknote> getCopyStorageBanknote(List<Banknote> inputStorage) throws CloneNotSupportedException {
-		// TODO: 8/11/16 eugene - starting from java 7 type in constructor call is redundant
-		List<Banknote>cloneStorage=new ArrayList<Banknote>(inputStorage.size());
-		for(Banknote banknote: inputStorage){
-			cloneStorage.add(banknote.clone());
-		}
-		return cloneStorage;
 	}
 
 	private int[] getArrayPropertiesBanknotes(String value) throws IOException {
@@ -291,10 +233,8 @@ public class OperationOfBanknote{
 				intResults[i] = Integer.valueOf(strValues[i]);
 			}
 		} catch (Exception e) {
-			System.out.println("File not found or damaged.");
 			LOG.info("File not found or damaged. " + e.fillInStackTrace());
 		}
 		return intResults;
 	}
-
 }

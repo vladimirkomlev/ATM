@@ -23,6 +23,13 @@ public class BanknoteStorage {
 		banknotes.add(banknote4);
 		banknotes.add(banknote5);
 	}
+	
+	public BanknoteStorage(int capacityStorageOfBanknotes){
+		banknotes=new ArrayList<Banknote>(capacityStorageOfBanknotes);
+		for (int index = 0; index < capacityStorageOfBanknotes; index++) {
+			banknotes.add(new Banknote(0, 0));
+		}
+	}
 
 	public List<Banknote> getBanknotes() {
 		return banknotes;

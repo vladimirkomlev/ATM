@@ -27,10 +27,10 @@ public class OperationsTest {
 	
 	@Test
 	public void testOperations() throws IOException, CloneNotSupportedException{
-		assertThat(operationOfBanknote.getCash(banknoteStorage), is(1000));
-		assertThat(operationOfBanknote.putCash(banknoteStorage), is(1000));
+		assertThat(operationOfBanknote.giveRequiredCash(banknoteStorage), is(1000));
+		assertThat(operationOfBanknote.acceptInputCash(banknoteStorage), is(1000));
 		assertThat(operationOfBanknote.getCashWhenResultSumLessRequiredSum(), is(1000));
-		assertThat(operationOfBanknote.getSumFromBanknoteStorageInput(banknoteStorage.getBanknotes()), is(1000));
+		assertThat(operationOfBanknote.getAmountFromInputStorageOfBanknotes(banknoteStorage.getBanknotes()), is(1000));
 		assertThat(operationOfBanknote.getValueOfNameFromFile("maxCount"), is(20));
 	}
 }

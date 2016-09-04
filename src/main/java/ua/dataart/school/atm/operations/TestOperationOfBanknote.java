@@ -13,12 +13,19 @@ public class TestOperationOfBanknote {
 	public static void main(String [] args) throws IOException, CloneNotSupportedException {
 		OperationOfBanknote operationOnBanknote=new OperationOfBanknote(inputStream);
 		BanknoteStorage storage=new BanknoteStorage();
+		BanknoteStorage storageForPutCash=new BanknoteStorage();
 		storage.getBanknotes().get(0).setValue(500);
-		storage.getBanknotes().get(0).setCount(10);
-//		storage.getBanknotes().get(1).setValue(200);
-//		storage.getBanknotes().get(1).setCount(4);
-		int saveAmount= operationOnBanknote.getCash(storage);
+		storage.getBanknotes().get(0).setCount(2);
+		storage.getBanknotes().get(2).setValue(100);
+		storage.getBanknotes().get(2).setCount(1);
+		storageForPutCash.getBanknotes().get(0).setValue(500);
+		storageForPutCash.getBanknotes().get(0).setCount(1);
+		storageForPutCash.getBanknotes().get(2).setValue(100);
+		storageForPutCash.getBanknotes().get(2).setCount(1);
+		int saveAmount= operationOnBanknote.giveRequiredCash(storage);
+		operationOnBanknote.giveRemainingAmountOfCash();
 		operationOnBanknote.saveCurrentStorageInMemory();
-		int saveAmout2=operationOnBanknote.getCash(storage);
+		int saveAmount3=operationOnBanknote.acceptInputCash(storageForPutCash);
+		int saveAmout2=operationOnBanknote.giveRequiredCash(storage);
 	}
 }
