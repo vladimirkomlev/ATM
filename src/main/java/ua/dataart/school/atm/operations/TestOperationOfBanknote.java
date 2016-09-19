@@ -11,7 +11,7 @@ public class TestOperationOfBanknote {
 	
 	
 	public static void main(String [] args) throws IOException, CloneNotSupportedException {
-		OperationOfBanknote operationOnBanknote=new OperationOfBanknote(inputStream);
+		OperationOfBanknote operationOnBanknote=new OperationOfBanknote();
 		BanknoteStorage storage=new BanknoteStorage();
 		BanknoteStorage storageForPutCash=new BanknoteStorage();
 		storage.getBanknotes().get(0).setValue(500);

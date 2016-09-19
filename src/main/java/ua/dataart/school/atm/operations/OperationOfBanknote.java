@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
@@ -13,12 +12,10 @@ import ua.dataart.school.atm.storage.BanknoteStorage;
 
 // TODO: 8/11/16 eugene - bad formatting
 // TODO: 8/11/16 eugene - bad name for class. It's not informative at all. And no plural form allowed
-//vova - Operations renamed on OperationOnBanknote
+// vova - Operations renamed on OperationOnBanknote
 public class OperationOfBanknote{
 	private static final Logger LOG = Logger.getLogger(OperationOfBanknote.class);
 	private static InputStream inputStream;
-	// TODO: 8/11/16 eugene - no need in keeping Properties in memory. You need them only during instantiation
-	private Properties properties;
 	private BanknoteStorage storageOfBanknotes;
 	private List<Banknote> cloneStorageOfBanknotes;
 	// TODO: 8/11/16 eugene - bad name for field
@@ -38,21 +35,15 @@ public class OperationOfBanknote{
 	private int currentCountOfBanknote;
 	private int currentValueOfBanknote;
 	private int flagForMethodWorkWithBanknote;
-
-	public OperationOfBanknote(InputStream inStream) {
-		try {
-			OperationOfBanknote.inputStream = inStream;
-			properties=new Properties();
-			properties.load(inputStream);
-			storageOfBanknotes=new BanknoteStorage(getArrayPropertiesBanknotes("value").length);
-			storageOfBanknotes.setBanknotes(getBanknoteStorageFromFile());
-			maxCountOfBanknote=getValueOfNameFromFile("maxCount");
-			fixedCountGivenOfBanknotes=getValueOfNameFromFile("fixedCountGiven");
-		} catch (IOException e) {
-			// TODO: 8/11/16 eugene - is it really normal to continue working if your key instance broke down?
-			LOG.info("File not found or damaged. " + e.fillInStackTrace());
-		}
-
+	
+	public OperationOfBanknote() throws IOException{
+		ConfigurationOfProperty instanceConfiguration=ConfigurationOfProperty.getInstance();
+		int capacity=instanceConfiguration.getArrayValuesOfProperty("value").length;
+		int arrayRasultValues[]=instanceConfiguration.getArrayValuesOfProperty("value");
+		int arrayResultCounts[]=instanceConfiguration.getArrayValuesOfProperty("count");
+		maxCountOfBanknote=instanceConfiguration.getValueOfPropertyWithName("maxCount");
+		fixedCountGivenOfBanknotes=instanceConfiguration.getValueOfPropertyWithName("fixedCountGiven");
+		storageOfBanknotes=new BanknoteStorage(capacity, arrayRasultValues, arrayResultCounts);
 	}
 
 	public static InputStream getInputStream() {
@@ -62,9 +53,9 @@ public class OperationOfBanknote{
 	public int giveRequiredCash(BanknoteStorage inputStorageOfBanknotes) throws IOException, CloneNotSupportedException {
 		initPrimaryValues();
 		//field flagForMethodWorkWithBanknote initialize positive value for work method workWithBanknotesForMethodsGiveRequiredCashAndAcceptInputCash
-		flagForMethodWorkWithBanknote=1;
+		flagForMethodWorkWithBanknote = 1;
 		workWithBanknotesForMethodsGiveRequiredCashAndAcceptInputCash(inputStorageOfBanknotes);
-		
+
 		return savedCurrentAmount;
 	}
 	
@@ -176,36 +167,13 @@ public class OperationOfBanknote{
 	}
 	
 	public int getAmountFromInputStorageOfBanknotes(List<Banknote> storage) {
-		// TODO: 8/11/16 eugene - variable with the same name as field. That's really bad practice
-		int requiredAmount=0;
+		int requiredAmountFromInputBanknotes=0;
 		for (Banknote banknote : storage) {
 			if(banknote.getCount()!=0){
-				requiredAmount+=banknote.getValue()*banknote.getCount();
+				requiredAmountFromInputBanknotes+=banknote.getValue()*banknote.getCount();
 			}
 		}
-		return requiredAmount;
-	}
-
-	// TODO: 8/11/16 eugene - poor method design. Instead of argument create BanknoteStorage inside method
-	// TODO: 8/11/16 eugene - Better receive Properties as an argument
-	public List<Banknote> getBanknoteStorageFromFile() throws IOException {
-		BanknoteStorage banknoteStorage = new BanknoteStorage();
-		int resultValues[] = getArrayPropertiesBanknotes("value");
-		int resultCounts[] = getArrayPropertiesBanknotes("count");
-		int index = 0;
-		// TODO: 8/11/16 eugene - here it would be better to iterate using indexed loop
-		for (Banknote banknote : banknoteStorage.getBanknotes()) {
-			banknote.setValue(resultValues[index]);
-			banknote.setCount(resultCounts[index]);
-			index++;
-		}
-
-		return banknoteStorage.getBanknotes();
-	}
-
-	// TODO: 8/11/16 eugene - Better receive Properties as an argument
-	public int getValueOfNameFromFile(String inputValue) {
-		return Integer.parseInt(properties.getProperty(inputValue));
+		return requiredAmountFromInputBanknotes;
 	}
 
 	public List<Banknote> getSaveStorage() {
@@ -221,20 +189,5 @@ public class OperationOfBanknote{
 		for(Banknote banknote: storageOfBanknotes.getBanknotes()){
 			cloneStorageOfBanknotes.add(banknote.clone());
 		}
-	}
-
-	private int[] getArrayPropertiesBanknotes(String value) throws IOException {
-		// TODO: 8/11/16 eugene - this looks strange
-		int intResults[] = new int[0];
-		try {
-			String strValues[] = properties.getProperty(value).split(";");
-			intResults = new int[strValues.length];
-			for (int i = 0; i < intResults.length; i++) {
-				intResults[i] = Integer.valueOf(strValues[i]);
-			}
-		} catch (Exception e) {
-			LOG.info("File not found or damaged. " + e.fillInStackTrace());
-		}
-		return intResults;
 	}
 }

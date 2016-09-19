@@ -23,10 +23,11 @@ import ua.dataart.school.atm.storage.BanknoteStorage;
 
 @WebServlet("/selection")
 // TODO: 8/11/16 eugene - bad class name
-//vova - SelectionOperation renamed on PageSelectOperation
+// vova - SelectionOperation renamed on PageSelectOperation
 public class PageSelectOperation extends HttpServlet {
 
 	// TODO: 8/11/16 eugene - you don't need serialVersionUID
+	// vova - IDE require create serialVersionUID
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger(PageSelectOperation.class);
 	private static final String ARCHIVE_PATH = "logs/";
@@ -129,7 +130,6 @@ public class PageSelectOperation extends HttpServlet {
 			}
 			index++;
 		}
-
 		return storage;
 	}
 
@@ -168,7 +168,6 @@ public class PageSelectOperation extends HttpServlet {
 
 		}
 		return result;
-
 	}
 
 	protected Boolean validationNegativeNumber(HttpServletRequest request) {

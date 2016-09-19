@@ -24,10 +24,10 @@ public class BanknoteStorage {
 		banknotes.add(banknote5);
 	}
 	
-	public BanknoteStorage(int capacityStorageOfBanknotes){
+	public BanknoteStorage(int capacityStorageOfBanknotes, int arrayValues[], int arrayCounts[]){
 		banknotes=new ArrayList<Banknote>(capacityStorageOfBanknotes);
 		for (int index = 0; index < capacityStorageOfBanknotes; index++) {
-			banknotes.add(new Banknote(0, 0));
+			banknotes.add(new Banknote(arrayValues[index], arrayCounts[index]));
 		}
 	}
 

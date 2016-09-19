@@ -1,7 +1,6 @@
 package ua.dataart.school.atm.servlet;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -21,23 +20,19 @@ import ua.dataart.school.atm.storage.BanknoteStorage;
 public class PageStart extends HttpServlet {
 
 	// TODO: 8/11/16 eugene - you don't need serialVersionUID
-	//vova - IDE require create serialVersionUID
+	// vova - IDE require create serialVersionUID
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger(PageStart.class);
 	protected ServletContext servletContext;
 	protected BanknoteStorage banknoteStorage;
 	protected OperationOfBanknote operationOfBanknote;
-	protected StringBuilder realPath;
 	
 	@Override
 	public void init() throws ServletException {
 		servletContext = getServletContext();
 		try {
-			ClassLoader classLoader=Thread.currentThread().getContextClassLoader();
-			InputStream inputStream = classLoader.getResourceAsStream("banknote.properties");
-			operationOfBanknote = new OperationOfBanknote(inputStream);
+			operationOfBanknote = new OperationOfBanknote();
 			banknoteStorage = new BanknoteStorage();
-			inputStream.close();
 		} catch (IOException e) {
 			LOG.info("File not found or damaged. " + e.fillInStackTrace());
 		}

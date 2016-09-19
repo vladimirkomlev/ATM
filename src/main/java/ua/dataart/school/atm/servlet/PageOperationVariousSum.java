@@ -11,10 +11,11 @@ import org.apache.log4j.Logger;
 
 @WebServlet("/anothersum")
 // TODO: 8/11/16 eugene - bad class name
-//vova - AnotherSum renamed on PageOperationVariousSum
+// vova - AnotherSum renamed on PageOperationVariousSum
 public class PageOperationVariousSum extends PageSelectOperation {
 
 	// TODO: 8/11/16 eugene - you don't need serialVersionUID
+	// vova - IDE require create serialVersionUID
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger(PageOperationVariousSum.class);
 	private static final String JSP_ANOTHERSUM_PATH = "WEB-INF/jsp/anothersum.jsp";
@@ -25,6 +26,9 @@ public class PageOperationVariousSum extends PageSelectOperation {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO: 8/11/16 eugene - why you call 'init' explicitly? Servlet container will call it
+		// vova - Servlet container call method "init" when create instance of class.
+		// While instance of class already exists and I call methods "doGet" or "doPost then method "init" do not call.
+		// That is why I call method "init" explicitly.
 		init();
 		request.getRequestDispatcher(JSP_ANOTHERSUM_PATH).forward(request, response);
 	}
