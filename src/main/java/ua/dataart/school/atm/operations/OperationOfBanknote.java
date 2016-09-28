@@ -179,6 +179,16 @@ public class OperationOfBanknote{
 	public List<Banknote> getSaveStorage() {
 		return savedStorage;
 	}
+	
+	public BanknoteStorage getCopyOfTheStorageOfBanknotes() throws CloneNotSupportedException{
+		BanknoteStorage copyBanknoteStorage=new BanknoteStorage();
+		List<Banknote> listBanknotes=new ArrayList<>();
+		for(Banknote banknote: storageOfBanknotes.getBanknotes()){
+			listBanknotes.add(banknote.clone());
+		}
+		copyBanknoteStorage.setBanknotes(listBanknotes);
+		return copyBanknoteStorage;
+	}
 
 	public void	saveCurrentStorageInMemory() throws CloneNotSupportedException{
 		storageOfBanknotes.setBanknotes(cloneStorageOfBanknotes);

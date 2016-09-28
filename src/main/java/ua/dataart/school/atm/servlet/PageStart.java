@@ -32,9 +32,11 @@ public class PageStart extends HttpServlet {
 		servletContext = getServletContext();
 		try {
 			operationOfBanknote = new OperationOfBanknote();
-			banknoteStorage = new BanknoteStorage();
+			banknoteStorage = operationOfBanknote.getCopyOfTheStorageOfBanknotes();
 		} catch (IOException e) {
 			LOG.info("File not found or damaged. " + e.fillInStackTrace());
+		} catch (CloneNotSupportedException e) {
+			LOG.info("Exception when cloning a storageOfBanknotes object. " + e.fillInStackTrace());
 		}
 
 		servletContext.setAttribute("operations", operationOfBanknote);

@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import ua.dataart.school.atm.domain.Banknote;
 import ua.dataart.school.atm.operations.OperationOfBanknote;
+import ua.dataart.school.atm.operations.ValidationOfInputValuesImpl;
 import ua.dataart.school.atm.operations.ZipArchive;
 import ua.dataart.school.atm.storage.BanknoteStorage;
 
@@ -37,12 +38,14 @@ public class PageSelectOperation extends HttpServlet {
 	protected ServletContext servletContext;
 	protected BanknoteStorage banknoteStorage;
 	protected OperationOfBanknote operationOfBanknote;
+	protected ValidationOfInputValuesImpl validationOfInputValuesImpl;
 
 	@Override
 	public void init() throws ServletException {
 		servletContext = getServletContext();
 		operationOfBanknote = (OperationOfBanknote) servletContext.getAttribute("operations");
 		banknoteStorage = (BanknoteStorage) servletContext.getAttribute("banknoteStorage");
+		validationOfInputValuesImpl=new ValidationOfInputValuesImpl(banknoteStorage);
 	}
 
 	@Override
@@ -107,30 +110,11 @@ public class PageSelectOperation extends HttpServlet {
 		}
 	}
 
-	protected List<Banknote> getDataFromJsp(HttpServletRequest request) {
-		List<Banknote> storage = new BanknoteStorage().getBanknotes();
-		Integer index = 0;
-		for (Banknote banknote : storage) {
-			// TODO: 8/11/16 eugene - terrible copypaste hardcode
-			if (index == 0) {
-				banknote.setValue(500);
-				banknote.setCount(Integer.parseInt(request.getParameter(index.toString())));
-			} else if (index == 1) {
-				banknote.setValue(200);
-				banknote.setCount(Integer.parseInt(request.getParameter(index.toString())));
-			} else if (index == 2) {
-				banknote.setValue(100);
-				banknote.setCount(Integer.parseInt(request.getParameter(index.toString())));
-			} else if (index == 3) {
-				banknote.setValue(50);
-				banknote.setCount(Integer.parseInt(request.getParameter(index.toString())));
-			} else if (index == 4) {
-				banknote.setValue(20);
-				banknote.setCount(Integer.parseInt(request.getParameter(index.toString())));
-			}
-			index++;
+	protected void getDataFromJsp(HttpServletRequest request) {
+		for (int i = 0; i < banknoteStorage.getBanknotes().size(); i++) {
+			banknoteStorage.getBanknotes().get(i).setCount(Integer.parseInt((request.getParameter(String.valueOf(i)))));
+			LOG.info(banknoteStorage.getBanknotes().get(i).getValue()+"="+banknoteStorage.getBanknotes().get(i).getCount());
 		}
-		return storage;
 	}
 
 	protected void sendValuesToJsp(String message, boolean resultChoose, String jspPath, HttpServletRequest request,
