@@ -13,18 +13,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.NumberUtils;
 import org.apache.log4j.Logger;
 
 import ua.dataart.school.atm.domain.Banknote;
-import ua.dataart.school.atm.operations.OperationOfBanknote;
+import ua.dataart.school.atm.operations.OperationOfBanknoteImpl;
 import ua.dataart.school.atm.operations.ValidationOfInputValuesImpl;
 import ua.dataart.school.atm.operations.ZipArchive;
 import ua.dataart.school.atm.storage.BanknoteStorage;
 
 @WebServlet("/selection")
-// TODO: 8/11/16 eugene - bad class name
-// vova - SelectionOperation renamed on PageSelectOperation
 public class PageSelectOperation extends HttpServlet {
 
 	// TODO: 8/11/16 eugene - you don't need serialVersionUID
@@ -37,15 +34,15 @@ public class PageSelectOperation extends HttpServlet {
 	private static final String NAME_FILE_ARCHIVE = "atmArchive.zip";
 	protected ServletContext servletContext;
 	protected BanknoteStorage banknoteStorage;
-	protected OperationOfBanknote operationOfBanknote;
+	protected OperationOfBanknoteImpl operationOfBanknoteImpl;
 	protected ValidationOfInputValuesImpl validationOfInputValuesImpl;
 
 	@Override
 	public void init() throws ServletException {
 		servletContext = getServletContext();
-		operationOfBanknote = (OperationOfBanknote) servletContext.getAttribute("operations");
+		operationOfBanknoteImpl = (OperationOfBanknoteImpl) servletContext.getAttribute("operations");
 		banknoteStorage = (BanknoteStorage) servletContext.getAttribute("banknoteStorage");
-		validationOfInputValuesImpl=new ValidationOfInputValuesImpl(banknoteStorage);
+		validationOfInputValuesImpl = new ValidationOfInputValuesImpl(banknoteStorage);
 	}
 
 	@Override
@@ -125,7 +122,7 @@ public class PageSelectOperation extends HttpServlet {
 	}
 
 	protected void saveInformationInLog(String informationAboutTransaction) {
-		List<Banknote> saveStorageBonknotes = operationOfBanknote.getSaveStorage();
+		List<Banknote> saveStorageBonknotes = operationOfBanknoteImpl.getSaveStorage();
 		StringBuilder sbResult = new StringBuilder();
 		sbResult.append(informationAboutTransaction);
 		for (Banknote banknote : saveStorageBonknotes) {
@@ -137,50 +134,4 @@ public class PageSelectOperation extends HttpServlet {
 		sbResult.deleteCharAt(sbResult.length() - 1);
 		LOG.info(sbResult);
 	}
-
-	protected Boolean validationForInteger(HttpServletRequest request) {
-		Boolean result = true;
-		String currentValue;
-		for (Integer index = 0; index < 5; index++) {
-			currentValue = request.getParameter(index.toString());
-			// TODO: 8/11/16 eugene - this is the only place you use Apache Commons. Better to write your own simple method
-			// TODO: 8/11/16 eugene - try to avoid using deprecated classes and methods
-			result = NumberUtils.isNumber(currentValue);
-			if (!result) {
-				break;
-			}
-
-		}
-		return result;
-	}
-
-	protected Boolean validationNegativeNumber(HttpServletRequest request) {
-		Boolean result = true;
-		Integer currentValue = 0;
-		for (Integer index = 0; index < 5; index++) {
-			currentValue = Integer.parseInt(request.getParameter(index.toString()));
-			if (currentValue < 0) {
-				result = false;
-				break;
-			}
-		}
-		return result;
-	}
-
-	protected Boolean validationEmptyString(HttpServletRequest request) {
-		Boolean result = true;
-		Integer index = 0;
-		for (Integer i = 0; i < 5; i++) {
-			if (request.getParameter(i.toString()) == "") {
-				index++;
-			}
-		}
-		if (index == 5) {
-			result = false;
-			return result;
-		} else {
-			return result;
-		}
-	}
-
 }

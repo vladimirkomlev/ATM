@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 @WebServlet("/anothersum")
-// TODO: 8/11/16 eugene - bad class name
-// vova - AnotherSum renamed on PageOperationVariousSum
 public class PageOperationVariousSum extends PageSelectOperation {
 
 	// TODO: 8/11/16 eugene - you don't need serialVersionUID
@@ -27,7 +25,7 @@ public class PageOperationVariousSum extends PageSelectOperation {
 			throws ServletException, IOException {
 		// TODO: 8/11/16 eugene - why you call 'init' explicitly? Servlet container will call it
 		// vova - Servlet container call method "init" when create instance of class.
-		// While instance of class already exists and I call methods "doGet" or "doPost then method "init" do not call.
+		// While instance of class already exists and I call methods "doGet" or "doPost then method "init" does not call.
 		// That is why I call method "init" explicitly.
 		init();
 		request.getRequestDispatcher(JSP_ANOTHERSUM_PATH).forward(request, response);
@@ -51,7 +49,7 @@ public class PageOperationVariousSum extends PageSelectOperation {
 		if (selectedOperation == 1) {
 			if (sbSubmitted.length() == strConfirm.length()) {
 				try {
-					operationOfBanknote.saveCurrentStorageInMemory();
+					operationOfBanknoteImpl.saveCurrentStorageInMemory();
 					saveInformationInLog(servletContext.getAttribute("informationTransaction").toString());
 				} catch (CloneNotSupportedException e) {
 					LOG.info("The cloning operation failed. " + e.fillInStackTrace());
@@ -68,7 +66,7 @@ public class PageOperationVariousSum extends PageSelectOperation {
 		} else if (selectedOperation == 0) {
 			if (sbSubmitted.length() == strConfirm.length()) {
 				try {
-					operationOfBanknote.saveCurrentStorageInMemory();
+					operationOfBanknoteImpl.saveCurrentStorageInMemory();
 					saveInformationInLog(servletContext.getAttribute("informationTransaction").toString());
 				} catch (CloneNotSupportedException e) {
 					LOG.info("The cloning operation failed. " + e.fillInStackTrace());

@@ -12,12 +12,12 @@ import ua.dataart.school.atm.storage.BanknoteStorage;
 
 public class OperationsTest {
 	
-	private OperationOfBanknote operationOfBanknote;
+	private OperationOfBanknoteImpl operationOfBanknoteImpl;
 	private BanknoteStorage banknoteStorage;
 	
 	@Before
 	public void init() throws IOException{
-		operationOfBanknote=new OperationOfBanknote();
+		operationOfBanknoteImpl=new OperationOfBanknoteImpl();
 		banknoteStorage=new BanknoteStorage();
 		banknoteStorage.getBanknotes().get(0).setValue(500);
 		banknoteStorage.getBanknotes().get(0).setCount(2);
@@ -25,9 +25,9 @@ public class OperationsTest {
 	
 	@Test
 	public void testOperations() throws IOException, CloneNotSupportedException{
-		assertThat(operationOfBanknote.giveRequiredCash(banknoteStorage), is(1000));
-		assertThat(operationOfBanknote.acceptInputCash(banknoteStorage), is(1000));
-		assertThat(operationOfBanknote.giveRemainingAmountOfCash(), is(1000));
-		assertThat(operationOfBanknote.getAmountFromInputStorageOfBanknotes(banknoteStorage.getBanknotes()), is(1000));
+		assertThat(operationOfBanknoteImpl.giveRequiredCash(banknoteStorage), is(1000));
+		assertThat(operationOfBanknoteImpl.acceptInputCash(banknoteStorage), is(1000));
+		assertThat(operationOfBanknoteImpl.giveRemainingAmountOfCash(), is(1000));
+		assertThat(operationOfBanknoteImpl.getAmountFromInputStorageOfBanknotes(banknoteStorage.getBanknotes()), is(1000));
 	}
 }

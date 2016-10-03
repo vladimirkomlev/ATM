@@ -11,12 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import ua.dataart.school.atm.operations.OperationOfBanknote;
+import ua.dataart.school.atm.operations.OperationOfBanknoteImpl;
 import ua.dataart.school.atm.storage.BanknoteStorage;
 
 @WebServlet("/")
-// TODO: 8/11/16 eugene - bad class name
-// vova - AtmStart renamed on PageStart
 public class PageStart extends HttpServlet {
 
 	// TODO: 8/11/16 eugene - you don't need serialVersionUID
@@ -25,21 +23,21 @@ public class PageStart extends HttpServlet {
 	private static final Logger LOG = Logger.getLogger(PageStart.class);
 	protected ServletContext servletContext;
 	protected BanknoteStorage banknoteStorage;
-	protected OperationOfBanknote operationOfBanknote;
+	protected OperationOfBanknoteImpl operationOfBanknoteImpl;
 	
 	@Override
 	public void init() throws ServletException {
 		servletContext = getServletContext();
 		try {
-			operationOfBanknote = new OperationOfBanknote();
-			banknoteStorage = operationOfBanknote.getCopyOfTheStorageOfBanknotes();
+			operationOfBanknoteImpl = new OperationOfBanknoteImpl();
+			banknoteStorage = operationOfBanknoteImpl.getCopyOfTheStorageOfBanknotes();
 		} catch (IOException e) {
 			LOG.info("File not found or damaged. " + e.fillInStackTrace());
 		} catch (CloneNotSupportedException e) {
 			LOG.info("Exception when cloning a storageOfBanknotes object. " + e.fillInStackTrace());
 		}
 
-		servletContext.setAttribute("operations", operationOfBanknote);
+		servletContext.setAttribute("operations", operationOfBanknoteImpl);
 		servletContext.setAttribute("banknoteStorage", banknoteStorage);
 	}
 
