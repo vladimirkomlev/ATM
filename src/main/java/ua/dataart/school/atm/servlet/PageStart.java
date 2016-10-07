@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import ua.dataart.school.atm.operations.OperationOfBanknoteImpl;
+import ua.dataart.school.atm.operations.behavior.OperationOfBanknote;
 import ua.dataart.school.atm.storage.BanknoteStorage;
 
 @WebServlet("/")
