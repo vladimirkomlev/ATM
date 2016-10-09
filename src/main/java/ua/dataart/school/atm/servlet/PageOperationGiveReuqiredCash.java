@@ -9,7 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import ua.dataart.school.atm.operations.SearchAmountInTheStorage;
+import ua.dataart.school.atm.operations.RequiredAmountForGiveRequiredCash;
+import ua.dataart.school.atm.operations.behavior.RequiredAmount;
 
 @WebServlet("/getcash")
 public class PageOperationGiveReuqiredCash extends PageSelectOperation {
@@ -48,17 +49,16 @@ public class PageOperationGiveReuqiredCash extends PageSelectOperation {
 		}
 
 		getDataFromJsp(request);
-		SearchAmountInTheStorage searchAmount = new SearchAmountInTheStorage(banknoteStorage, operationOfBanknoteImpl);
-		boolean resultSearchMethod = searchAmount.searchOfTheRequiredAmount();
-
-		if (!resultSearchMethod) {
-			servletContext.setAttribute("resultSum", searchAmount.getResultSum());
+		RequiredAmount requiredAmount = new RequiredAmountForGiveRequiredCash(banknoteStorage, operationOfBanknoteImpl);
+		boolean resultRequiredAmount = requiredAmount.searchOfTheRequiredAmount();
+		
+		if (!resultRequiredAmount) {
+			servletContext.setAttribute("resultSum", requiredAmount.getResultAmount());
 			servletContext.setAttribute("selectedOperation", 1);
 			servletContext.setAttribute("informationTransaction", informationTransaction);
-			sendValuesToJsp(searchAmount.getOutputMassage(), resultChoose, JSP_ANOTHERSUM_PATH, request, response);
+			sendValuesToJsp(requiredAmount.getOutputMessage(), resultChoose, JSP_ANOTHERSUM_PATH, request, response);
 		} else {
-			LOG.info("resultSearchMethod=" + resultSearchMethod);
-			sendValuesToJsp(searchAmount.getOutputMassage(), resultChoose, JSP_GETCASH_PATH, request, response);
+			sendValuesToJsp(requiredAmount.getOutputMessage(), resultChoose, JSP_GETCASH_PATH, request, response);
 		}
 	}
 }

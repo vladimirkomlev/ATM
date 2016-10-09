@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import ua.dataart.school.atm.domain.Banknote;
 import ua.dataart.school.atm.storage.BanknoteStorage;
 
 public class SearchAmountInTheStorage {
@@ -19,7 +20,7 @@ public class SearchAmountInTheStorage {
 	private OperationOfBanknoteImpl operationOfBanknote;
 	private int requiredSum;
 	private int resultSum;
-	private String outputMassage;
+	private String outputMessage;
 	
 	public SearchAmountInTheStorage(BanknoteStorage inputStorageOfBanknote, OperationOfBanknoteImpl operationOfBanknote) {
 		this.inputValuesStorageOfBanknote = inputStorageOfBanknote;
@@ -35,7 +36,7 @@ public class SearchAmountInTheStorage {
 		}
 
 		if (requiredSum == 0) {
-			outputMassage = MESSAGE_INPUT_ZERO;
+			outputMessage = MESSAGE_INPUT_ZERO;
 			return true;
 		} else if (resultSum == 0 || requiredSum > resultSum) {
 			return recivingMissingAmount();
@@ -47,10 +48,10 @@ public class SearchAmountInTheStorage {
 	private boolean recivingMissingAmount(){
 		resultSum = operationOfBanknote.giveRemainingAmountOfCash();
 		if(resultSum == 0){
-			outputMassage = MESSAGE_AMOUNT_IS_MISSING;
+			outputMessage = MESSAGE_AMOUNT_IS_MISSING;
 			return true;
 		} else {
-			outputMassage = MESSAGE_ANOTHER_SUM_PATH_FIRST + resultSum + MESSAGE_ANOTHER_SUM_PATH_SECOND;
+			outputMessage = MESSAGE_ANOTHER_SUM_PATH_FIRST + resultSum + MESSAGE_ANOTHER_SUM_PATH_SECOND;
 			inputValuesStorageOfBanknote.setBanknotes(operationOfBanknote.getSaveStorage());
 			return false;
 		}	
@@ -63,7 +64,7 @@ public class SearchAmountInTheStorage {
 			} catch (CloneNotSupportedException e) {
 				LOG.info("The cloning operation failed. " + e.fillInStackTrace());
 			}
-			outputMassage = MESSAGE_YOU_GOT + resultSum;
+			outputMessage = MESSAGE_YOU_GOT + resultSum;
 			return true;
 		} else {
 			return false;
@@ -75,6 +76,6 @@ public class SearchAmountInTheStorage {
 	}
 	
 	public String getOutputMassage() {
-		return outputMassage;
+		return outputMessage;
 	}
 }

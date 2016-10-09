@@ -3,6 +3,7 @@ package ua.dataart.school.atm.operations;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.NumberUtils;
+import org.apache.log4j.Logger;
 
 import ua.dataart.school.atm.operations.behavior.ValidationOfInputValues;
 import ua.dataart.school.atm.storage.BanknoteStorage;
@@ -12,18 +13,32 @@ public class ValidationOfInputValuesImpl extends ValidationOfInputValues{
 	private static final String MESSAGE_VALIDATION_IS_EMPTY_STRING = "You do not specify the amount of banknotes. Please, enter the amount of banknotes.";
 	private static final String MESSAGE_VALIDATION_NEGATIVE_NUMBER = "One of the fields is the value specified negative number. Please, enter the correct value.";
 	private static final String MESSAGE_VALIDATION_FOR_INTEGER = "One of the fields is the value specified was not a number. Please, enter the correct value.";
+	private static final String MESSAGE_BY_ZERO = "Entered amount should be greater than zero. Please, enter the correct value.";
+	private static final Logger LOG=Logger.getLogger(ValidationOfInputValuesImpl.class);
 
-	private BanknoteStorage storageOfBanknotes;
 	private String outputMessage;
+	private int sizeStorage;
 
 	public ValidationOfInputValuesImpl(BanknoteStorage banknoteStorage) {
-		this.storageOfBanknotes = banknoteStorage;
+		this.sizeStorage = banknoteStorage.getBanknotes().size();
+	}
+	
+	@Override
+	protected boolean validationByZero(HttpServletRequest request) {
+		int resultOfInputValues = 0;
+		for (int index = 0; index < sizeStorage; index++) {
+			resultOfInputValues += Integer.parseInt(request.getParameter(String.valueOf(index)));
+		}
+		LOG.info("intRes=" + resultOfInputValues);
+		if (resultOfInputValues == 0) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	@Override
-	protected boolean validationIsEmptyString(HttpServletRequest request) {
-		boolean result = true;
-		int sizeStorage = storageOfBanknotes.getBanknotes().size();
+	protected boolean validationByEmptyString(HttpServletRequest request) {
 		int counter = 0;
 		for (int index = 0; index < sizeStorage; index++) {
 			if (request.getParameter(String.valueOf(index)) == "") {
@@ -31,35 +46,33 @@ public class ValidationOfInputValuesImpl extends ValidationOfInputValues{
 			}
 		}
 		if (counter == sizeStorage) {
-			result=false;
-			return result;
+			return false;
 		} else {
-			return result;
+			return true;
 		}
 	}
 
 	@Override
-	protected boolean validationForNegativeNumber(HttpServletRequest request) {
-		boolean result = true;
+	protected boolean validationByNegativeNumber(HttpServletRequest request) {
 		int currentValue = 0;
-		for (int index = 0; index < storageOfBanknotes.getBanknotes().size(); index++) {
+		for (int index = 0; index < sizeStorage; index++) {
 			currentValue = Integer.parseInt(request.getParameter(String.valueOf(index)));
 			if (currentValue < 0) {
-				result = false;
-				return result;
+				return false;
 			}
 		}
-		return result;
+		return true;
 	}
 	
 	@Override
-	protected boolean validationForInteger(HttpServletRequest request) {
-		boolean result = false;
+	protected boolean validationByInteger(HttpServletRequest request) {
+		boolean result = true;
 		String currentValue;
-		for (int index = 0; index < storageOfBanknotes.getBanknotes().size(); index++) {
+		for (int index = 0; index < sizeStorage; index++) {
 			currentValue = request.getParameter(String.valueOf(index));
 			result = NumberUtils.isNumber(currentValue);
 			if (!result) {
+				result=false;
 				break;
 			}
 		}
@@ -67,14 +80,17 @@ public class ValidationOfInputValuesImpl extends ValidationOfInputValues{
 	}
 	
 	public boolean validationOfInputValues(HttpServletRequest request) {
-		if (!(validationIsEmptyString(request))) {
+		if (!(validationByEmptyString(request))) {
 			outputMessage = MESSAGE_VALIDATION_IS_EMPTY_STRING;
 			return false;
-		} else if (!(validationForInteger(request))) {
+		} else if (!(validationByInteger(request))) {
 			outputMessage = MESSAGE_VALIDATION_FOR_INTEGER;
 			return false;
-		} else if (!(validationForNegativeNumber(request))) {
+		} else if (!(validationByNegativeNumber(request))) {
 			outputMessage = MESSAGE_VALIDATION_NEGATIVE_NUMBER;
+			return false;
+		} else if (!(validationByZero(request))) {
+			outputMessage = MESSAGE_BY_ZERO;
 			return false;
 		} else {
 			return true;

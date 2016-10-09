@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import ua.dataart.school.atm.operations.InputAmountForAcceptInputCash;
+import ua.dataart.school.atm.operations.behavior.RequiredAmount;
+
 @WebServlet("/putcash")
 public class PageOperationAcceptInputCash extends PageSelectOperation {
 
@@ -41,38 +44,50 @@ public class PageOperationAcceptInputCash extends PageSelectOperation {
 			return;
 		}
 
-		getDataFromJsp(request);		
-		int inputSum = operationOfBanknoteImpl.getAmountFromInputStorageOfBanknotes(banknoteStorage.getBanknotes());
-		int resultSum = 0;
-		try {
-			resultSum = operationOfBanknoteImpl.acceptInputCash(banknoteStorage);
-		} catch (CloneNotSupportedException e) {
-			LOG.info("The cloning operation failed. " + e.fillInStackTrace());
-		}
-		if (inputSum == 0) {
-			message = "Entered amount should be greater than zero. Please, enter the correct value.";
-			sendValuesToJsp(message, resultChoose, JSP_PUTCASH_PATH, request, response);
-		} else if (resultSum == 0) {
-			message = "Unfortunately we can not accept your input amount. The number of banknotes filled in that you specified.";
-			sendValuesToJsp(message, resultChoose, JSP_PUTCASH_PATH, request, response);
-		} else if (inputSum == resultSum) {
-			try {
-				operationOfBanknoteImpl.saveCurrentStorageInMemory();
-				saveInformationInLog(informationTransaction);
-			} catch (CloneNotSupportedException e) {
-				LOG.info("The cloning operation failed. " + e.fillInStackTrace());
-			}
-			message = "Credited with the amount " + resultSum;
-			sendValuesToJsp(message, resultChoose, JSP_PUTCASH_PATH, request, response);
-		} else if (inputSum > resultSum) {
-			message = "Unfortunately we can not accept you have the amount " + inputSum
-					+ " of these denominations of banknotes. We can take from you amount " + resultSum
-					+ " from the following denominations of banknotes:";
-			banknoteStorage.setBanknotes(operationOfBanknoteImpl.getSaveStorage());
-			servletContext.setAttribute("resultSum", resultSum);
+		getDataFromJsp(request);
+		RequiredAmount inputRequiredAmount = new  InputAmountForAcceptInputCash(banknoteStorage, operationOfBanknoteImpl);
+		boolean resultInputRequitedAmount = inputRequiredAmount.searchOfTheRequiredAmount();
+		
+		if(!resultInputRequitedAmount){
+			servletContext.setAttribute("resultSum", inputRequiredAmount.getResultAmount());
 			servletContext.setAttribute("selectedOperation", 0);
 			servletContext.setAttribute("informationTransaction", informationTransaction);
-			sendValuesToJsp(message, resultChoose, JSP_ANOTHERSUM_PATH, request, response);
+			sendValuesToJsp(inputRequiredAmount.getOutputMessage(), resultChoose, JSP_ANOTHERSUM_PATH, request, response);
+		}else{
+			sendValuesToJsp(inputRequiredAmount.getOutputMessage(), resultChoose, JSP_PUTCASH_PATH, request, response);
 		}
+		
+//		int inputSum = operationOfBanknoteImpl.getAmountFromInputStorageOfBanknotes(banknoteStorage.getBanknotes());
+//		int resultSum = 0;
+//		try {
+//			resultSum = operationOfBanknoteImpl.acceptInputCash(banknoteStorage);
+//		} catch (CloneNotSupportedException e) {
+//			LOG.info("The cloning operation failed. " + e.fillInStackTrace());
+//		}
+//		if (inputSum == 0) {
+//			message = "Entered amount should be greater than zero. Please, enter the correct value.";
+//			sendValuesToJsp(message, resultChoose, JSP_PUTCASH_PATH, request, response);
+//		} else if (resultSum == 0) {
+//			message = "Unfortunately we can not accept your input amount. The number of banknotes filled in that you specified.";
+//			sendValuesToJsp(message, resultChoose, JSP_PUTCASH_PATH, request, response);
+//		} else if (inputSum == resultSum) {
+//			try {
+//				operationOfBanknoteImpl.saveCurrentStorageInMemory();
+//				saveInformationInLog(informationTransaction);
+//			} catch (CloneNotSupportedException e) {
+//				LOG.info("The cloning operation failed. " + e.fillInStackTrace());
+//			}
+//			message = "Credited with the amount " + resultSum;
+//			sendValuesToJsp(message, resultChoose, JSP_PUTCASH_PATH, request, response);
+//		} else if (inputSum > resultSum) {
+//			message = "Unfortunately we can not accept you have the amount " + inputSum
+//					+ " of these denominations of banknotes. We can take from you amount " + resultSum
+//					+ " from the following denominations of banknotes:";
+//			banknoteStorage.setBanknotes(operationOfBanknoteImpl.getSaveStorage());
+//			servletContext.setAttribute("resultSum", resultSum);
+//			servletContext.setAttribute("selectedOperation", 0);
+//			servletContext.setAttribute("informationTransaction", informationTransaction);
+//			sendValuesToJsp(message, resultChoose, JSP_ANOTHERSUM_PATH, request, response);
+//		}
 	}
 }
