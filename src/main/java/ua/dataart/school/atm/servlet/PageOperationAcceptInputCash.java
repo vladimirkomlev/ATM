@@ -7,8 +7,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 import ua.dataart.school.atm.operations.InputAmountForAcceptInputCash;
 import ua.dataart.school.atm.operations.behavior.RequiredAmount;
 
@@ -16,21 +14,16 @@ import ua.dataart.school.atm.operations.behavior.RequiredAmount;
 public class PageOperationAcceptInputCash extends PageSelectOperation {
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOG = Logger.getLogger(PageOperationAcceptInputCash.class);
 	private static final String JSP_PUTCASH_PATH = "WEB-INF/jsp/putcash.jsp";
 	private static final String JSP_ANOTHERSUM_PATH = "WEB-INF/jsp/anothersum.jsp";
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		init();
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.getRequestDispatcher(JSP_PUTCASH_PATH).forward(request, response);
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		String informationTransaction = "Receipt in cash-";
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		boolean resultChoose = true;
 		boolean resultOfValidaionInputValues = validationOfInputValuesImpl.validationOfInputValues(request);
 
@@ -41,15 +34,15 @@ public class PageOperationAcceptInputCash extends PageSelectOperation {
 		}
 
 		getDataFromJsp(request);
-		RequiredAmount inputRequiredAmount = new  InputAmountForAcceptInputCash(banknoteStorage, operationOfBanknoteImpl);
+		RequiredAmount inputRequiredAmount = new InputAmountForAcceptInputCash(storageOfBanknotes, operationOfBanknoteImpl);
 		boolean resultInputRequitedAmount = inputRequiredAmount.searchOfTheRequiredAmount();
-		
-		if(!resultInputRequitedAmount){
+
+		if (!resultInputRequitedAmount) {
 			servletContext.setAttribute("resultSum", inputRequiredAmount.getResultAmount());
+			servletContext.setAttribute("banknoteStorage", storageOfBanknotes);
 			servletContext.setAttribute("selectedOperation", 0);
-			servletContext.setAttribute("informationTransaction", informationTransaction);
 			sendValuesToJsp(inputRequiredAmount.getOutputMessage(), resultChoose, JSP_ANOTHERSUM_PATH, request, response);
-		}else{
+		} else {
 			sendValuesToJsp(inputRequiredAmount.getOutputMessage(), resultChoose, JSP_PUTCASH_PATH, request, response);
 		}
 	}

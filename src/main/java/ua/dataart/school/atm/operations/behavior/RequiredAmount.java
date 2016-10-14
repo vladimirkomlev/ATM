@@ -19,6 +19,6 @@ public abstract class RequiredAmount {
 	public abstract String getOutputMessage();
 	public abstract int getResultAmount();
 	protected abstract void initRequiredAndResultAmount() throws IOException;
-	
+	protected abstract void saveInformationInLog();
 
 }

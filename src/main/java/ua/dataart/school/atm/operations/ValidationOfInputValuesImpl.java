@@ -19,8 +19,8 @@ public class ValidationOfInputValuesImpl extends ValidationOfInputValues{
 	private String outputMessage;
 	private int sizeStorage;
 
-	public ValidationOfInputValuesImpl(BanknoteStorage banknoteStorage) {
-		this.sizeStorage = banknoteStorage.getBanknotes().size();
+	public ValidationOfInputValuesImpl(int capacityOfStorage) {
+		this.sizeStorage = capacityOfStorage;
 	}
 	
 	@Override

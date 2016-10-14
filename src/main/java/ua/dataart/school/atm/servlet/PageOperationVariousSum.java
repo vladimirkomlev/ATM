@@ -7,78 +7,44 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import ua.dataart.school.atm.operations.DifferentAmountForAcceptInputCash;
+import ua.dataart.school.atm.operations.DifferentAmountForGiveRequiredAmount;
+import ua.dataart.school.atm.operations.behavior.DifferentAmount;
 
 @WebServlet("/anothersum")
 public class PageOperationVariousSum extends PageSelectOperation {
 
-	// TODO: 8/11/16 eugene - you don't need serialVersionUID
-	// vova - IDE require create serialVersionUID
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOG = Logger.getLogger(PageOperationVariousSum.class);
 	private static final String JSP_ANOTHERSUM_PATH = "WEB-INF/jsp/anothersum.jsp";
 	private static final String JSP_PUTCASH_PATH = "WEB-INF/jsp/putcash.jsp";
 	private static final String JSP_GETCASH_PATH = "WEB-INF/jsp/getcash.jsp";
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		// TODO: 8/11/16 eugene - why you call 'init' explicitly? Servlet container will call it
-		// vova - Servlet container call method "init" when create instance of class.
-		// While instance of class already exists and I call methods "doGet" or "doPost then method "init" does not call.
-		// That is why I call method "init" explicitly.
-		init();
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.getRequestDispatcher(JSP_ANOTHERSUM_PATH).forward(request, response);
 	}
 
-	// TODO: 8/11/16 eugene - overcomplicated method
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		// TODO: 8/11/16 eugene - why you call 'init' explicitly? Servlet container will call it
-		init();
-		String strConfirm = "Confirm";
-		String strCancel = "Cancel";
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int selectedOperation = (Integer) servletContext.getAttribute("selectedOperation");
 		StringBuilder sbSubmitted = new StringBuilder();
 		sbSubmitted.append(request.getParameter("submitted"));
-		boolean resultChoose = true;
-		String message = "";
-		int result = (int) servletContext.getAttribute("resultSum");
-		// TODO: 8/11/16 eugene - use some constants for operation codes
-		if (selectedOperation == 1) {
-			if (sbSubmitted.length() == strConfirm.length()) {
-				try {
-					operationOfBanknoteImpl.saveCurrentStorageInMemory();
-					saveInformationInLog(servletContext.getAttribute("informationTransaction").toString());
-				} catch (CloneNotSupportedException e) {
-					LOG.info("The cloning operation failed. " + e.fillInStackTrace());
-				}
-				message = "You got: " + result;
-				sendValuesToJsp(message, resultChoose, JSP_GETCASH_PATH, request, response);
-				return;
-			} else if (sbSubmitted.length() == strCancel.length()) {
-				resultChoose = false;
-				sendValuesToJsp(message, resultChoose, JSP_GETCASH_PATH, request, response);
-				return;
-			}
+		int resultAmount = (int) servletContext.getAttribute("resultSum");
 
+		if (selectedOperation == 1) {
+			DifferentAmount dfForRequiredAmount = new DifferentAmountForGiveRequiredAmount(operationOfBanknoteImpl,
+					resultAmount);
+			dfForRequiredAmount.selectAnotherAmount(request);
+			sendValuesToJsp(dfForRequiredAmount.getOutputMessage(), dfForRequiredAmount.getResultChoose(), JSP_GETCASH_PATH,
+					request, response);
+			return;
 		} else if (selectedOperation == 0) {
-			if (sbSubmitted.length() == strConfirm.length()) {
-				try {
-					operationOfBanknoteImpl.saveCurrentStorageInMemory();
-					saveInformationInLog(servletContext.getAttribute("informationTransaction").toString());
-				} catch (CloneNotSupportedException e) {
-					LOG.info("The cloning operation failed. " + e.fillInStackTrace());
-				}
-				message = "Credited with the amount " + result;
-				sendValuesToJsp(message, resultChoose, JSP_PUTCASH_PATH, request, response);
-				return;
-			} else if (sbSubmitted.length() == strCancel.length()) {
-				resultChoose = false;
-				sendValuesToJsp(message, resultChoose, JSP_PUTCASH_PATH, request, response);
-				return;
-			}
+			DifferentAmount dfAcceptInputCash = new DifferentAmountForAcceptInputCash(operationOfBanknoteImpl, resultAmount);
+			dfAcceptInputCash.selectAnotherAmount(request);
+			sendValuesToJsp(dfAcceptInputCash.getOutputMessage(), dfAcceptInputCash.getResultChoose(), JSP_PUTCASH_PATH,
+					request, response);
+			return;
 		}
+
 	}
 }

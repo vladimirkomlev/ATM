@@ -24,8 +24,6 @@ import ua.dataart.school.atm.storage.BanknoteStorage;
 @WebServlet("/selection")
 public class PageSelectOperation extends HttpServlet {
 
-	// TODO: 8/11/16 eugene - you don't need serialVersionUID
-	// vova - IDE require create serialVersionUID
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger(PageSelectOperation.class);
 	private static final String ARCHIVE_PATH = "logs/";
@@ -33,7 +31,7 @@ public class PageSelectOperation extends HttpServlet {
 	private static final String TRIM_PATH = "webapps";
 	private static final String NAME_FILE_ARCHIVE = "atmArchive.zip";
 	protected ServletContext servletContext;
-	protected BanknoteStorage banknoteStorage;
+	protected BanknoteStorage storageOfBanknotes;
 	protected OperationOfBanknoteImpl operationOfBanknoteImpl;
 	protected ValidationOfInputValuesImpl validationOfInputValuesImpl;
 
@@ -41,21 +39,16 @@ public class PageSelectOperation extends HttpServlet {
 	public void init() throws ServletException {
 		servletContext = getServletContext();
 		operationOfBanknoteImpl = (OperationOfBanknoteImpl) servletContext.getAttribute("operations");
-		banknoteStorage = (BanknoteStorage) servletContext.getAttribute("banknoteStorage");
-		validationOfInputValuesImpl = new ValidationOfInputValuesImpl(banknoteStorage);
+		validationOfInputValuesImpl = new ValidationOfInputValuesImpl(operationOfBanknoteImpl.getCapacityOfStorage());
 	}
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		init();
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.getRequestDispatcher("WEB-INF/jsp/selection.jsp").forward(request, response);
-
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String pathToArchive = getArchiveLogs();
 		response.setContentType("application/octet-stream");
 		response.setHeader("Content-Disposition", "attachment;filename=atmArchive.zip");
@@ -77,7 +70,7 @@ public class PageSelectOperation extends HttpServlet {
 		return;
 	}
 
-	private String getArchiveLogs() {
+	private String getArchiveLogs() throws IOException {
 		StringBuilder realPath = new StringBuilder();
 		realPath.append(servletContext.getRealPath("/"));
 		String pathToArchive;
@@ -108,9 +101,9 @@ public class PageSelectOperation extends HttpServlet {
 	}
 
 	protected void getDataFromJsp(HttpServletRequest request) {
-		for (int i = 0; i < banknoteStorage.getBanknotes().size(); i++) {
-			banknoteStorage.getBanknotes().get(i).setCount(Integer.parseInt((request.getParameter(String.valueOf(i)))));
-			LOG.info(banknoteStorage.getBanknotes().get(i).getValue()+"="+banknoteStorage.getBanknotes().get(i).getCount());
+		getNewStorageOfBanknotes();
+		for (int i = 0; i < storageOfBanknotes.getBanknotes().size(); i++) {
+			storageOfBanknotes.getBanknotes().get(i).setCount(Integer.parseInt((request.getParameter(String.valueOf(i)))));
 		}
 	}
 
@@ -133,5 +126,13 @@ public class PageSelectOperation extends HttpServlet {
 		}
 		sbResult.deleteCharAt(sbResult.length() - 1);
 		LOG.info(sbResult);
+	}
+
+	private void getNewStorageOfBanknotes() {
+		try {
+			storageOfBanknotes = operationOfBanknoteImpl.getCopyOfTheStorageOfBanknotes();
+		} catch (CloneNotSupportedException e) {
+			LOG.info("Exception when cloning a storageOfBanknotes object. " + e.fillInStackTrace());
+		}
 	}
 }

@@ -17,8 +17,7 @@ public class Banknote implements Cloneable{
 	public int getCount() {
 		return count;
 	}
-
-	// TODO: 8/11/16 eugene - it's really strange that banknote can change values
+	
 	public void setValue(int value) {
 		this.value = value;
 	}
@@ -34,8 +33,6 @@ public class Banknote implements Cloneable{
 
 	@Override
 	public Banknote clone() throws CloneNotSupportedException {
-		// TODO: 8/11/16 eugene - strange formatting
-		// vova - What do is strange with formatting?
 			return (Banknote)super.clone();
 
 	}
