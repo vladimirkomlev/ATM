@@ -9,7 +9,7 @@ public class BanknoteStorage {
 
 	private List<Banknote> banknotes = new ArrayList<>();
 
-	public BanknoteStorage() {
+	public BanknoteStorage() {	
 		// TODO: 8/11/16 eugene - strange banknotes with zero values
 		Banknote banknote1 = new Banknote(0, 0);
 		Banknote banknote2 = new Banknote(0, 0);

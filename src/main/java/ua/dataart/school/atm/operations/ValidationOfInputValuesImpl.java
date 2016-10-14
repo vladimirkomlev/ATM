@@ -3,10 +3,7 @@ package ua.dataart.school.atm.operations;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.NumberUtils;
-import org.apache.log4j.Logger;
-
 import ua.dataart.school.atm.operations.behavior.ValidationOfInputValues;
-import ua.dataart.school.atm.storage.BanknoteStorage;
 
 public class ValidationOfInputValuesImpl extends ValidationOfInputValues{
 	
@@ -14,7 +11,6 @@ public class ValidationOfInputValuesImpl extends ValidationOfInputValues{
 	private static final String MESSAGE_VALIDATION_NEGATIVE_NUMBER = "One of the fields is the value specified negative number. Please, enter the correct value.";
 	private static final String MESSAGE_VALIDATION_FOR_INTEGER = "One of the fields is the value specified was not a number. Please, enter the correct value.";
 	private static final String MESSAGE_BY_ZERO = "Entered amount should be greater than zero. Please, enter the correct value.";
-	private static final Logger LOG=Logger.getLogger(ValidationOfInputValuesImpl.class);
 
 	private String outputMessage;
 	private int sizeStorage;
@@ -29,7 +25,6 @@ public class ValidationOfInputValuesImpl extends ValidationOfInputValues{
 		for (int index = 0; index < sizeStorage; index++) {
 			resultOfInputValues += Integer.parseInt(request.getParameter(String.valueOf(index)));
 		}
-		LOG.info("intRes=" + resultOfInputValues);
 		if (resultOfInputValues == 0) {
 			return false;
 		} else {

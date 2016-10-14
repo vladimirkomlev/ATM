@@ -1,12 +1,9 @@
 package ua.dataart.school.atm.operations;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
-import ua.dataart.school.atm.domain.Banknote;
 import ua.dataart.school.atm.operations.behavior.DifferentAmount;
 
 public class DifferentAmountForAcceptInputCash extends DifferentAmount {
@@ -41,7 +38,7 @@ public class DifferentAmountForAcceptInputCash extends DifferentAmount {
 		if (sbSubmitted.length() == CONFIRM.length()) {
 			try {
 				operationOfBanknote.saveCurrentStorageInMemory();
-				saveInforamationInLog();
+				saveInfoTransaction(operationOfBanknote.getSaveStorage(), INFO_TRANSACTION);
 				outputMessage = MESSAGE_CREDITED_AMOUNT + resultAmount;
 				resultChoose = true;
 			} catch (CloneNotSupportedException e) {
@@ -61,20 +58,6 @@ public class DifferentAmountForAcceptInputCash extends DifferentAmount {
 		} else {
 			return true;
 		}
-	}
-
-	private void saveInforamationInLog() {
-		List<Banknote> savedStorageOfBanknote = operationOfBanknote.getSaveStorage();
-		StringBuilder sbResult = new StringBuilder();
-		sbResult.append(INFO_TRANSACTION);
-		for (Banknote banknote : savedStorageOfBanknote) {
-			if (banknote.getCount() != 0) {
-				sbResult.append(banknote.toString());
-				sbResult.append(";");
-			}
-		}
-		sbResult.deleteCharAt(sbResult.length() - 1);
-		LOG.info(sbResult);
 	}
 
 	@Override
