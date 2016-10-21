@@ -9,3 +9,8 @@ Application write down amount accepted and given banknotes. All these recordings
 ## Installation 
 
 It is worked on container servlets Tomcat version 7.0.42
+
+## Settings
+
+Preliminary settings ATM can be set in file **banknote.properties**.
+In a deployed application on server file banknote.properties has a way /WEB-INF/classes/
